@@ -15,7 +15,7 @@
 </head>
 
 <body class="bg-gray-100">
-    <header class="relative overflow-hidden bg-gray-100 p-8 text-center shadow-md">
+    <header class="relative overflow-hidden bg-gray-100 p-4 text-center shadow-md">
         <div class="pointer-events-none absolute inset-0"></div>
         <div class="relative z-10">
             <img src="src/assets/logo.png" alt="ColorCompare Logo" class="mx-auto h-16" width="198" height="64" />
@@ -27,17 +27,34 @@
             Discover and compare colors in real time. Simple, fast, and beautiful.
         </p>
     </header>
-
     <div class="color-picker-container" id="colorPickers">
         <!-- Initial color pickers will be added dynamically -->
         <button id="addColor" type="button">+ Add More Color</button>
     </div>
-
     <div class="flex flex-grow flex-row" id="colorDisplays">
         <!-- Color display divs will be added dynamically -->
     </div>
+    <div class="palette-section mx-auto max-w-6xl px-4 py-4">
+        <h2>Try Our Pre-built Color Palettes</h2>
+        <p>Explore a variety of color combinations with our pre-built palettes. Click on a palette to apply it to the color pickers.</p>
 
-    <div class="mx-auto max-w-4xl px-4 py-8">
+        <div id="paletteButtons">
+            <button class="paletteButton" data-palette="rainbow"></button>
+            <button class="paletteButton" data-palette="autumnBlaze"></button>
+            <button class="paletteButton" data-palette="berryDelight"></button>
+            <button class="paletteButton" data-palette="citrusZest"></button>
+            <button class="paletteButton" data-palette="verdantShades"></button>
+            <button class="paletteButton" data-palette="forestRetreat"></button>
+            <button class="paletteButton" data-palette="oceanDepths"></button>
+            <button class="paletteButton" data-palette="skyBlues"></button>
+            <button class="paletteButton" data-palette="sunsetShades"></button>
+            <button class="paletteButton" data-palette="floralWhisper"></button>
+            <button class="paletteButton" data-palette="earthTone"></button>
+            <button class="paletteButton" data-palette="monochrome"></button>
+        </div>
+    </div>
+
+    <div class="mx-auto max-w-6xl px-4 py-8">
         <h2 class="mb-4 text-2xl font-bold text-gray-800">
             Why Color Matters in Design
         </h2>
@@ -45,7 +62,6 @@
             Colors play a pivotal role in design, whether it's for a website, a home interior, or a corporate logo. They can trigger psychological responses and carry with them cultural associations that are vital to consider during the design process. With ColorCompare,
             you can place colors side by side to see how they complement or contrast, helping you make informed design decisions.
         </p>
-    
         <h2 class="mb-4 text-2xl font-bold text-gray-800">
             Features of ColorCompare
         </h2>
@@ -95,38 +111,36 @@
                 </div>
             </div>
         </div>
-    </div>    
-
+    </div>
     <footer class="p-4 text-center">
         <p class="text-sm">
             &copy; 2024 ColorCompare created by
             <a href="http://www.libin.in/" target="_blank" rel="noopener">Libin V Babu</a>. View the source code on <a href="https://github.com/libinvbabu/colorcompare" target="_blank" rel="noopener">GitHub</a>
         </p>
     </footer>
-
     <script>
         let colorCount = 0;
         let activeColorPickers = []; // Track active color pickers
         const defaultColors = ["#a6d6d7", "#c1c99c", "#dd9251", "#e0aa4a", "#e3c252", "#f0d65e", "#f4e3ae"];
-    
+        
         function initializeColorPickers() {
             for (let i = 0; i < 2; i++) {
                 addColorPicker(i, false);
             }
         }
-    
+        
         function addColorPicker(index, removable = true) {
             if (activeColorPickers.length >= 7) return;
-    
+        
             colorCount++;
             const colorPickerId = `inputColor${colorCount}`;
             const colorDisplayId = `color${colorCount}`;
             activeColorPickers.push(colorCount);
-    
+        
             const defaultColor = defaultColors[index] || defaultColors[defaultColors.length - 1];
             const colorPickerContainer = document.getElementById('colorPickers');
             const addColorButton = document.getElementById('addColor');
-    
+        
             let colorPickerHTML = document.createElement('div');
             colorPickerHTML.className = 'input-group';
             colorPickerHTML.id = `group${colorCount}`;
@@ -136,96 +150,96 @@
                 <input aria-labelledby="${colorPickerId}" type="color" class="color-picker" value="${defaultColor}" />
                 ${removable ? `<button type="button" class="close-picker" onclick="removeColorPicker(${colorCount})">X</button>` : ''}
             `;
-    
+        
             // Insert the new color picker HTML before the Add Color button
             colorPickerContainer.insertBefore(colorPickerHTML, addColorButton);
-
+        
             const rgb = hexToRgb(defaultColor);
             const cmyk = hexToCmyk(defaultColor);
-    
+        
             const colorDisplayHTML = `<div id="${colorDisplayId}" class="color-display" style="background-color: ${defaultColor};"><div id="color-info-${colorCount}" class="color-info">${defaultColor}<br>${rgbToString(rgb)}<br>${cmykToString(cmyk)}</div></div>`;
             document.getElementById('colorDisplays').insertAdjacentHTML('beforeend', colorDisplayHTML);
-    
+        
             const colorInput = document.getElementById(colorPickerId);
             const colorPicker = document.querySelector(`#group${colorCount} .color-picker`);
-    
+        
             attachColorChangeListeners(colorPicker, colorInput, colorDisplayId, colorCount);
-    
+        
             updateAddColorButtonVisibility();
         }
-    
+        
         function attachColorChangeListeners(colorPicker, colorInput, colorDisplayId, colorCount) {
             colorPicker.addEventListener("input", function () {
                 const colorValue = this.value;
                 colorInput.value = colorValue;
                 document.getElementById(colorDisplayId).style.backgroundColor = colorValue;
-    
+        
                 // Update the color info text dynamically when the color changes
                 const colorInfoDiv = document.getElementById(`color-info-${colorCount}`);
-
+        
                 const rgb = hexToRgb(colorValue);
                 const cmyk = hexToCmyk(colorValue);
                 colorInfoDiv.innerHTML = `${colorValue}<br>${rgbToString(rgb)}<br>${cmykToString(cmyk)}`;
             });
-    
+        
             colorInput.addEventListener("keyup", function () {
                 const colorValue = this.value.toUpperCase();
                 const validColor = /^#([0-9A-F]{3}){1,2}$/i.test(colorValue);
                 if (validColor) {
                     colorPicker.value = colorValue;
                     document.getElementById(colorDisplayId).style.backgroundColor = colorValue;
-    
+        
                     // Update the color info text
                     const colorInfoDiv = document.getElementById(`color-info-${colorCount}`);
-
+        
                     const rgb = hexToRgb(colorValue);
                     const cmyk = hexToCmyk(colorValue);
                     colorInfoDiv.innerHTML = `${colorValue}<br>${rgbToString(rgb)}<br>${cmykToString(cmyk)}`;
                 }
             });
         }
-    
+        
         function hexToRgb(hex) {
             let r = parseInt(hex.slice(1, 3), 16);
             let g = parseInt(hex.slice(3, 5), 16);
             let b = parseInt(hex.slice(5, 7), 16);
             return { r, g, b };
         }
-
+        
         function rgbToCmyk(r, g, b) {
             let c = 1 - (r / 255);
             let m = 1 - (g / 255);
             let y = 1 - (b / 255);
             let k = Math.min(c, Math.min(m, y));
-
+        
             c = (c - k) / (1 - k);
             m = (m - k) / (1 - k);
             y = (y - k) / (1 - k);
-
+        
             // Converting to percentage values
             c = Math.round(c * 100);
             m = Math.round(m * 100);
             y = Math.round(y * 100);
             k = Math.round(k * 100);
-
+        
             return { c, m, y, k };
         }
-
+        
         function hexToCmyk(hex) {
             const { r, g, b } = hexToRgb(hex);
             return rgbToCmyk(r, g, b);
         }
-
+        
         function rgbToString(rgb) {
             return `RGB(${rgb.r}, ${rgb.g}, ${rgb.b})`;
         }
-
+        
         function cmykToString(cmyk) {
             return `CMYK(${cmyk.c}%, ${cmyk.m}%, ${cmyk.y}%, ${cmyk.k}%)`;
         }
-
-
-    
+        
+        
+        
         function removeColorPicker(index) {
             const colorPickerGroup = document.getElementById(`group${index}`);
             const colorDisplay = document.getElementById(`color${index}`);
@@ -234,10 +248,10 @@
                 colorDisplay.remove();
                 activeColorPickers = activeColorPickers.filter(id => id !== index);
             }
-    
+        
             updateAddColorButtonVisibility();
         }
-    
+        
         function updateAddColorButtonVisibility() {
             const addColorButton = document.getElementById('addColor');
             if (activeColorPickers.length >= 7) {
@@ -246,15 +260,84 @@
                 addColorButton.style.display = 'inline-block'; // Or 'block', depending on your layout
             }
         }
-    
+        
         document.getElementById('addColor').addEventListener('click', function() {
             addColorPicker(activeColorPickers.length);
         });
-    
+        
         initializeColorPickers();
         updateAddColorButtonVisibility();
-    </script>    
-    
+        
+        
+        const palettes = {
+            rainbow: ['#9400D3', '#4B0082', '#0000FF', '#008000', '#FFFF00', '#FF7F00', '#FF0000'],
+            autumnBlaze: ['#692D19', '#B23A1E', '#D95D39', '#F2A65A', '#FFC482', '#FFD9A5', '#FFECD1'],
+            berryDelight: ['#480048', '#601060', '#782078', '#903090', '#A840A8', '#C050C0', '#D860D8'],
+            citrusZest: ['#FFA500', '#FFB733', '#FFC966', '#FFDB99', '#FFEDCC', '#FFFFE0', '#FFFFF4'],
+            verdantShades: ['#006400', '#008000', '#228B22', '#32CD32', '#00FF00', '#7CFC00', '#ADFF2F'],
+            forestRetreat: ['#013220', '#024E36', '#036C4E', '#048C66', '#05AC7E', '#06CC96', '#08ECAE'],
+            oceanDepths: ['#005B7F', '#007B9E', '#009ECC', '#00B4D2', '#2BC4E2', '#65D3E8', '#9BE3EE'],
+            skyBlues: ['#0277BD', '#0288D1', '#039BE5', '#03A9F4', '#29B6F6', '#4FC3F7', '#81D4FA'],
+            sunsetShades: ['#FF4500', '#FF6347', '#CD5C5C', '#FA8072', '#FFA07A', '#F08080', '#FFDAB9'],
+            floralWhisper: ['#701C1C', '#8B2F2F', '#A64343', '#C15757', '#DC6B6B', '#F78080', '#FF9595'],
+            earthTone: ['#556B2F', '#6B8E23', '#8FBC8F', '#228B22', '#BDB76B', '#8B4513', '#A0522D'],
+            monochrome: ['#333333', '#555555', '#777777', '#999999', '#BBBBBB', '#DDDDDD', '#FFFFFF'],
+        };
+        
+
+        // Adding palettes
+        function loadPalette(paletteName) {
+            const colors = palettes[paletteName];
+            if (!colors) return;
+            
+            // Ensure there are 7 color pickers
+            while (activeColorPickers.length < 7) {
+                addColorPicker(activeColorPickers.length, activeColorPickers.length > 1);
+            }
+            
+            // Update each color picker with the selected palette colors
+            activeColorPickers.forEach((pickerId, index) => {
+                const colorPickerId = `inputColor${pickerId}`;
+                const colorDisplayId = `color${pickerId}`;
+                const colorValue = colors[index % colors.length];
+            
+                const colorInput = document.getElementById(colorPickerId);
+                const colorPicker = document.querySelector(`#group${pickerId} .color-picker`);
+                const colorInfoDiv = document.getElementById(`color-info-${pickerId}`);
+            
+                if (colorInput && colorPicker && colorInfoDiv) {
+                colorInput.value = colorValue;
+                colorPicker.value = colorValue;
+                document.getElementById(colorDisplayId).style.backgroundColor = colorValue;
+            
+                const rgb = hexToRgb(colorValue);
+                const cmyk = hexToCmyk(colorValue);
+                colorInfoDiv.innerHTML = `${colorValue}<br>${rgbToString(rgb)}<br>${cmykToString(cmyk)}`;
+                }
+            });
+        }
+        
+        document.querySelectorAll('.paletteButton').forEach(button => {
+            const paletteName = button.getAttribute('data-palette');
+            const colors = palettes[paletteName];
+            
+            // Append color preview spans
+            colors.forEach(color => {
+                const span = document.createElement('span');
+                span.classList.add('colorPreview');
+                span.style.backgroundColor = color;
+                button.appendChild(span); // Append each color preview to the button
+            });
+            
+            // Append the palette name at the end
+            const nameSpan = document.createElement('span');
+            nameSpan.classList.add('paletteName');
+            nameSpan.textContent = paletteName.charAt(0).toUpperCase() + paletteName.slice(1); // Capitalize the first letter
+            button.appendChild(nameSpan); // Append the palette name after the color previews
+            
+            button.addEventListener('click', () => loadPalette(paletteName));
+        });
+    </script>
 </body>
 
 </html>
