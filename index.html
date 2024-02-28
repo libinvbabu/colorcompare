@@ -57,7 +57,7 @@
                         Side-by-Side Color Visualization
                     </h3>
                     <p class="text-gray-600">
-                        Compare up to five colors side by side to visually assess how they complement or contrast with each other, enhancing your design decision-making process.
+                        Compare up to seven colors side by side to visually assess how they complement or contrast with each other, enhancing your design decision-making process.
                     </p>
                 </div>
             </div>
@@ -107,7 +107,7 @@
     <script>
         let colorCount = 0;
         let activeColorPickers = []; // Track active color pickers
-        const defaultColors = ["#B4B4B8", "#C7C8CC", "#EEEEEE", "#E3E1D9", "#F2EFE5"];
+        const defaultColors = ["#a6d6d7", "#c1c99c", "#dd9251", "#e0aa4a", "#e3c252", "#f0d65e", "#f4e3ae"];
     
         function initializeColorPickers() {
             for (let i = 0; i < 2; i++) {
@@ -116,7 +116,7 @@
         }
     
         function addColorPicker(index, removable = true) {
-            if (activeColorPickers.length >= 5) return;
+            if (activeColorPickers.length >= 7) return;
     
             colorCount++;
             const colorPickerId = `inputColor${colorCount}`;
@@ -240,7 +240,7 @@
     
         function updateAddColorButtonVisibility() {
             const addColorButton = document.getElementById('addColor');
-            if (activeColorPickers.length >= 5) {
+            if (activeColorPickers.length >= 7) {
                 addColorButton.style.display = 'none';
             } else {
                 addColorButton.style.display = 'inline-block'; // Or 'block', depending on your layout
