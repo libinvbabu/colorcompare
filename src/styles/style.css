@@ -464,10 +464,26 @@ header {
     margin: 1rem 0;
 }
 .color-display {
+    position: relative;
     flex-grow: 1;
     height: calc(70vh - 64px);
     transition: background-color 0.5s ease;
     background-color: #eeeeee;
+}
+.color-info {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    color: white;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background for readability */
+    padding: 5px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.color-display.dark .color-info {
+    color: black;
+    background: rgba(255, 255, 255, 0.8); /* Light background for dark colors */
 }
 .input-group {
     position: relative;
