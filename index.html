@@ -61,7 +61,11 @@
             .color-display {
                 flex-grow: 1;
                 height: calc(70vh - 64px);
-                transition: background-color 0.5s ease; /* Animation effect */
+                transition: background-color 0.5s ease;
+                background-color: #eeeeee;
+            }
+            #color1 {
+                background-color: #b0b0b0;
             }
             .input-group {
                 display: flex;
@@ -77,6 +81,7 @@
                 margin-right: 0.5rem;
                 font-size: 1rem;
                 width: 100px;
+                outline: none;
             }
             footer {
                 padding: 1rem;
@@ -100,14 +105,13 @@
                 />
             </div>
             <h1 class="mt-4 animate-pulse text-4xl font-bold text-black">
-                Find Your Perfect Color Match
+                Compare colors side-by-side
             </h1>
             <p class="mt-2 text-lg text-[#1d3657]">
                 Discover and compare colors in real time. Simple, fast, and
                 beautiful.
             </p>
         </header>
-
         <div class="color-picker-container">
             <div class="input-group">
                 <input
@@ -142,6 +146,79 @@
         <div class="flex flex-grow flex-row">
             <div id="color1" class="color-display"></div>
             <div id="color2" class="color-display"></div>
+        </div>
+
+        <div class="mx-auto max-w-4xl px-4 py-8">
+            <h2 class="mb-4 text-2xl font-bold text-gray-800">
+                Why Color Matters in Design
+            </h2>
+            <p class="mb-6 text-gray-600">
+                Colors play a pivotal role in design, whether it's for a
+                website, a home interior, or a corporate logo. They can trigger
+                psychological responses and carry with them cultural
+                associations that are vital to consider during the design
+                process. With ColorCompare, you can place colors side by side to
+                see how they complement or contrast, helping you make informed
+                design decisions.
+            </p>
+
+            <h2 class="mb-4 text-2xl font-bold text-gray-800">
+                Features of ColorCompare
+            </h2>
+            <div class="-mx-2 flex flex-wrap">
+                <div class="mb-4 w-full px-2 md:w-1/2">
+                    <div class="rounded-lg bg-white p-4 shadow">
+                        <div class="mb-3 h-16 w-16 bg-blue-500"></div>
+                        <h3 class="mb-2 text-lg font-bold">
+                            Side-by-Side Color Visualization
+                        </h3>
+                        <p class="text-gray-600">
+                            Our tool allows you to view colors next to each
+                            other, so you can visually compare and contrast
+                            hues, shades, and tints with ease.
+                        </p>
+                    </div>
+                </div>
+                <div class="mb-4 w-full px-2 md:w-1/2">
+                    <div class="rounded-lg bg-white p-4 shadow">
+                        <div class="mb-3 h-16 w-16 bg-green-500"></div>
+                        <h3 class="mb-2 text-lg font-bold">
+                            Instant Hex Color Codes
+                        </h3>
+                        <p class="text-gray-600">
+                            Get the exact Hex color codes for your chosen
+                            colors, making it simple to replicate your palette
+                            in any digital design tool.
+                        </p>
+                    </div>
+                </div>
+                <div class="mb-4 w-full px-2 md:w-1/2">
+                    <div class="rounded-lg bg-white p-4 shadow">
+                        <div class="mb-3 h-16 w-16 bg-red-500"></div>
+                        <h3 class="mb-2 text-lg font-bold">
+                            Full-Screen Comparison
+                        </h3>
+                        <p class="text-gray-600">
+                            Utilize the full screen for enhanced color
+                            comparison, providing a clear visualization of color
+                            interactions in designs.
+                        </p>
+                    </div>
+                </div>
+                <div class="mb-4 w-full px-2 md:w-1/2">
+                    <div class="rounded-lg bg-white p-4 shadow">
+                        <div class="mb-3 h-16 w-16 bg-yellow-500"></div>
+                        <h3 class="mb-2 text-lg font-bold">
+                            User-Friendly Interface
+                        </h3>
+                        <p class="text-gray-600">
+                            ColorCompare boasts an intuitive interface that
+                            requires no learning curve – select your colors and
+                            compare them in a click.
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <footer class="p-4 text-center">
