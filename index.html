@@ -24,26 +24,17 @@
             Compare colors side-by-side
         </h1>
         <p class="mt-2 text-lg text-[#1d3657]">
-            Discover and compare colors in real time. Simple, fast, and
-            beautiful.
+            Discover and compare colors in real time. Simple, fast, and beautiful.
         </p>
     </header>
-    <div class="color-picker-container">
-        <div class="input-group">
-            <label for="inputColor1" class="sr-only">Color 1</label>
-            <input id="inputColor1" type="text" class="color-input" placeholder="#b0b0b0" aria-label="Color 1" />
-            <input aria-labelledby="inputColor1" type="color" value="#b0b0b0" class="h-10 w-10" onchange="updateColor('inputColor1', this.value)" />
-        </div>
-        <div class="input-group">
-            <label for="inputColor2" class="sr-only">Color 2</label>
-            <input id="inputColor2" type="text" class="color-input" placeholder="#eeeeee" aria-label="Color 2" />
-            <input aria-labelledby="inputColor2" type="color" value="#eeeeee" class="h-10 w-10" onchange="updateColor('inputColor2', this.value)" />
-        </div>
+
+    <div class="color-picker-container" id="colorPickers">
+        <!-- Initial color pickers will be added dynamically -->
+        <button id="addColor" type="button">Add Another Color</button>
     </div>
 
-    <div class="flex flex-grow flex-row">
-        <div id="color1" class="color-display"></div>
-        <div id="color2" class="color-display"></div>
+    <div class="flex flex-grow flex-row" id="colorDisplays">
+        <!-- Color display divs will be added dynamically -->
     </div>
 
     <div class="mx-auto max-w-4xl px-4 py-8">
@@ -51,13 +42,8 @@
             Why Color Matters in Design
         </h2>
         <p class="mb-6 text-gray-600">
-            Colors play a pivotal role in design, whether it's for a
-            website, a home interior, or a corporate logo. They can trigger
-            psychological responses and carry with them cultural
-            associations that are vital to consider during the design
-            process. With ColorCompare, you can place colors side by side to
-            see how they complement or contrast, helping you make informed
-            design decisions.
+            Colors play a pivotal role in design, whether it's for a website, a home interior, or a corporate logo. They can trigger psychological responses and carry with them cultural associations that are vital to consider during the design process. With ColorCompare,
+            you can place colors side by side to see how they complement or contrast, helping you make informed design decisions.
         </p>
 
         <h2 class="mb-4 text-2xl font-bold text-gray-800">
@@ -71,9 +57,7 @@
                         Side-by-Side Color Visualization
                     </h3>
                     <p class="text-gray-600">
-                        Our tool allows you to view colors next to each
-                        other, so you can visually compare and contrast
-                        hues, shades, and tints with ease.
+                        Our tool allows you to view colors next to each other, so you can visually compare and contrast hues, shades, and tints with ease.
                     </p>
                 </div>
             </div>
@@ -84,9 +68,7 @@
                         Instant Hex Color Codes
                     </h3>
                     <p class="text-gray-600">
-                        Get the exact Hex color codes for your chosen
-                        colors, making it simple to replicate your palette
-                        in any digital design tool.
+                        Get the exact Hex color codes for your chosen colors, making it simple to replicate your palette in any digital design tool.
                     </p>
                 </div>
             </div>
@@ -97,9 +79,7 @@
                         Full-Screen Comparison
                     </h3>
                     <p class="text-gray-600">
-                        Utilize the full screen for enhanced color
-                        comparison, providing a clear visualization of color
-                        interactions in designs.
+                        Utilize the full screen for enhanced color comparison, providing a clear visualization of color interactions in designs.
                     </p>
                 </div>
             </div>
@@ -110,9 +90,7 @@
                         User-Friendly Interface
                     </h3>
                     <p class="text-gray-600">
-                        ColorCompare boasts an intuitive interface that
-                        requires no learning curve – select your colors and
-                        compare them in a click.
+                        ColorCompare boasts an intuitive interface that requires no learning curve – select your colors and compare them in a click.
                     </p>
                 </div>
             </div>
@@ -127,34 +105,92 @@
     </footer>
 
     <script>
-        function updateColor(inputId, value) {
-            document.getElementById(inputId).value = value;
-            document
-                .getElementById(inputId)
-                .dispatchEvent(new Event("input"));
+        let colorCount = 0;
+        let activeColorPickers = []; // Track active color pickers
+        const defaultColors = ["#B4B4B8", "#C7C8CC", "#EEEEEE", "#E3E1D9", "#F2EFE5"];
+        
+        function initializeColorPickers() {
+            for (let i = 0; i < 2; i++) {
+                addColorPicker(i, false);
+            }
         }
         
-        // Add this inside the script tag
+        function addColorPicker(index, removable = true) {
+            if (activeColorPickers.length >= 5) return;
         
-        document
-            .querySelector('.input-group:nth-child(1) input[type="color"]')
-            .addEventListener("input", function () {
-                var color1 = this.value;
-                var color2 = document.getElementById("inputColor2").value;
-                document.getElementById("inputColor1").value = color1;
-                document.getElementById("color1").style.backgroundColor =
-                    color1;
+            colorCount++;
+            const colorPickerId = `inputColor${colorCount}`;
+            const colorDisplayId = `color${colorCount}`;
+            activeColorPickers.push(colorCount);
+        
+            const defaultColor = defaultColors[index] || defaultColors[defaultColors.length - 1];
+            const colorPickerContainer = document.getElementById('colorPickers');
+            const addColorButton = document.getElementById('addColor');
+        
+            let colorPickerHTML = document.createElement('div');
+            colorPickerHTML.className = 'input-group';
+            colorPickerHTML.id = `group${colorCount}`;
+            colorPickerHTML.innerHTML = `
+                <label for="${colorPickerId}" class="sr-only">Color ${colorCount}</label>
+                <input id="${colorPickerId}" type="text" class="color-input" placeholder="${defaultColor}" />
+                <input aria-labelledby="${colorPickerId}" type="color" class="color-picker" value="${defaultColor}" />
+                ${removable ? `<button type="button" class="close-picker" onclick="removeColorPicker(${colorCount})">X</button>` : ''}
+            `;
+        
+            // Insert the new color picker HTML before the Add Color button
+            colorPickerContainer.insertBefore(colorPickerHTML, addColorButton);
+        
+            const colorDisplayHTML = `<div id="${colorDisplayId}" class="color-display" style="background-color: ${defaultColor};"></div>`;
+            document.getElementById('colorDisplays').insertAdjacentHTML('beforeend', colorDisplayHTML);
+        
+            const colorInput = document.getElementById(colorPickerId);
+            const colorPicker = document.querySelector(`#group${colorCount} .color-picker`);
+        
+            colorPicker.addEventListener("input", function () {
+                colorInput.value = this.value;
+                document.getElementById(colorDisplayId).style.backgroundColor = this.value;
             });
         
-        document
-            .querySelector('.input-group:nth-child(2) input[type="color"]')
-            .addEventListener("input", function () {
-                var color1 = document.getElementById("inputColor1").value;
-                var color2 = this.value;
-                document.getElementById("inputColor2").value = color2;
-                document.getElementById("color2").style.backgroundColor =
-                    color2;
+            colorInput.addEventListener("keyup", function () {
+                const validColor = /^#([0-9A-F]{3}){1,2}$/i.test(this.value);
+                if (validColor) {
+                    colorPicker.value = this.value;
+                    document.getElementById(colorDisplayId).style.backgroundColor = this.value;
+                }
             });
+        
+            updateAddColorButtonVisibility();
+        }
+        
+        
+        
+        function removeColorPicker(index) {
+            const colorPickerGroup = document.getElementById(`group${index}`);
+            const colorDisplay = document.getElementById(`color${index}`);
+            if (colorPickerGroup && colorDisplay) {
+                colorPickerGroup.remove();
+                colorDisplay.remove();
+                activeColorPickers = activeColorPickers.filter(id => id !== index);
+            }
+        
+            updateAddColorButtonVisibility();
+        }
+        
+        function updateAddColorButtonVisibility() {
+            const addColorButton = document.getElementById('addColor');
+            if (activeColorPickers.length >= 5) {
+                addColorButton.style.display = 'none';
+            } else {
+                addColorButton.style.display = 'inline-block'; // Or 'block', depending on your layout
+            }
+        }
+        
+        document.getElementById('addColor').addEventListener('click', function() {
+            addColorPicker(activeColorPickers.length);
+        });
+        
+        initializeColorPickers();
+        updateAddColorButtonVisibility();
     </script>
 </body>
 
