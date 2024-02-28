@@ -7,7 +7,6 @@ ColorCompare is a simple yet powerful web tool designed to help users compare di
 - Compare up to five colors simultaneously.
 - View color details in HEX, RGB, and CMYK formats.
 - Interactive UI allows for easy color adjustments.
-- Dark mode for enhanced user experience.
 - Accessibility features to ensure color choices are user-friendly for individuals with color vision deficiencies.
 
 ## Built With

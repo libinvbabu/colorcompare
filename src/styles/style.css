@@ -34,8 +34,9 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: inherit;
 }
 a {
-    color: inherit;
     text-decoration: inherit;
+    color: #3F51B5;
+    border-bottom: 1px solid;
 }
 b, strong {
     font-weight: bolder;
