@@ -24,73 +24,10 @@
         />
         <!-- Google Fonts -->
         <link
-            href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto:wght@400;700&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
             rel="stylesheet"
         />
-        <style>
-            * {
-                box-sizing: border-box;
-            }
-            html,
-            body {
-                height: 100%;
-                margin: 0;
-                padding: 0;
-            }
-            body {
-                font-family: "Roboto", sans-serif;
-                background: #f8f9fa;
-            }
-            header {
-                background: #fff;
-                padding: 2rem 0;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                position: relative;
-                z-index: 10;
-            }
-            .logo-container img {
-                height: 80px;
-            }
-            .color-picker-container {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 8px;
-                margin: 1rem 0;
-            }
-            .color-display {
-                flex-grow: 1;
-                height: calc(70vh - 64px);
-                transition: background-color 0.5s ease;
-                background-color: #eeeeee;
-            }
-            #color1 {
-                background-color: #b0b0b0;
-            }
-            .input-group {
-                display: flex;
-                align-items: center;
-                background: #ffffff;
-                border-radius: 4px;
-                border: 1px solid #dddddd;
-                padding: 0.5rem;
-            }
-            .color-input {
-                border: none;
-                padding: 8px;
-                margin-right: 0.5rem;
-                font-size: 1rem;
-                width: 100px;
-                outline: none;
-            }
-            footer {
-                padding: 1rem;
-                background: #fff;
-                text-align: center;
-                position: relative;
-                z-index: 10;
-            }
-        </style>
+        <link rel="stylesheet" href="style.css" />
     </head>
     <body class="bg-gray-100">
         <header
@@ -102,9 +39,11 @@
                     src="logo.png"
                     alt="ColorCompare Logo"
                     class="mx-auto h-16"
+                    width="198"
+                    height="64"
                 />
             </div>
-            <h1 class="mt-4 animate-pulse text-4xl font-bold text-black">
+            <h1 class="mt-4 text-4xl font-bold text-black">
                 Compare colors side-by-side
             </h1>
             <p class="mt-2 text-lg text-[#1d3657]">
@@ -114,13 +53,16 @@
         </header>
         <div class="color-picker-container">
             <div class="input-group">
+                <label for="inputColor1" class="sr-only">Color 1</label>
                 <input
                     id="inputColor1"
                     type="text"
                     class="color-input"
                     placeholder="#b0b0b0"
+                    aria-label="Color 1"
                 />
                 <input
+                    aria-labelledby="inputColor1"
                     type="color"
                     value="#b0b0b0"
                     class="h-10 w-10"
@@ -128,13 +70,16 @@
                 />
             </div>
             <div class="input-group">
+                <label for="inputColor2" class="sr-only">Color 2</label>
                 <input
                     id="inputColor2"
                     type="text"
                     class="color-input"
                     placeholder="#eeeeee"
+                    aria-label="Color 2"
                 />
                 <input
+                    aria-labelledby="inputColor2"
                     type="color"
                     value="#eeeeee"
                     class="h-10 w-10"
