@@ -4,17 +4,41 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="title" content="ColorCompare: Visual Color Comparison Tool" />
-    <meta name="description" content="ColorCompare provides a simple way to compare and contrast colors instantly for your design projects." />
-    <meta name="keywords" content="color comparison, color tool, design tool, color match" />
+    <title>ColorCompare: Visual Color Comparison Tool for Designers | Compare Colors Side by Side</title>
+    <meta name="description" content="ColorCompare provides an easy-to-use visual color comparison tool for designers. Compare colors side by side, explore pre-built palettes, and make informed design decisions." />
+    <meta name="keywords" content="color comparison, color tool, design tool, color match, color theory, color psychology, web design" />
     <meta name="robots" content="index, follow" />
-    <title>ColorCompare: Visual Color Comparison Tool</title>
+    <meta property="og:title" content="ColorCompare: Visual Color Comparison Tool for Designers" />
+    <meta property="og:description" content="Compare colors side by side, explore pre-built palettes, and make informed design decisions with ColorCompare." />
+    <meta property="og:url" content="https://colorcompare.in/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://colorcompare.in/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="ColorCompare: Visual Color Comparison Tool for Designers" />
+    <meta name="twitter:description" content="Compare colors side by side, explore pre-built palettes, and make informed design decisions with ColorCompare." />
+    <meta name="twitter:image" content="https://colorcompare.in/og-image.jpg" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="src/styles/style.css" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "ColorCompare",
+      "description": "Visual color comparison tool for designers to compare colors side by side and explore pre-built palettes.",
+      "url": "https://colorcompare.in",
+      "applicationCategory": "DesignApplication",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "0"
+      }
+    }
+    </script>
 </head>
 
 <body class="bg-gray-100">
@@ -24,98 +48,244 @@
             <img src="src/assets/logo.png" alt="ColorCompare Logo" class="mx-auto h-16" width="198" height="64" />
         </div>
         <h1 class="mt-4 text-4xl font-bold text-black">
-            Compare colors side by side
+            Compare Colors Side by Side
         </h1>
         <p class="mt-2 text-lg text-[#1d3657]">
             Discover and compare colors in real time. Simple, fast, and beautiful.
         </p>
     </header>
-    <div class="color-picker-container" id="colorPickers">
-        <!-- Initial color pickers will be added dynamically -->
-        <button id="addColor" type="button">+ Add More Color</button>
-    </div>
-    <div class="flex flex-grow flex-row" id="colorDisplays">
-        <!-- Color display divs will be added dynamically -->
-    </div>
-    <div class="palette-section mx-auto max-w-6xl px-4 py-4">
-        <h2>Try Our Pre-built Color Palettes</h2>
-        <p>Explore a variety of color combinations with our pre-built palettes. Click on a palette to apply it to the color pickers.</p>
 
-        <div id="paletteButtons">
-            <button class="paletteButton" data-palette="rainbow"></button>
-            <button class="paletteButton" data-palette="autumnBlaze"></button>
-            <button class="paletteButton" data-palette="berryDelight"></button>
-            <button class="paletteButton" data-palette="citrusZest"></button>
-            <button class="paletteButton" data-palette="verdantShades"></button>
-            <button class="paletteButton" data-palette="forestRetreat"></button>
-            <button class="paletteButton" data-palette="oceanDepths"></button>
-            <button class="paletteButton" data-palette="skyBlues"></button>
-            <button class="paletteButton" data-palette="sunsetShades"></button>
-            <button class="paletteButton" data-palette="floralWhisper"></button>
-            <button class="paletteButton" data-palette="earthTone"></button>
-            <button class="paletteButton" data-palette="monochrome"></button>
-        </div>
-    </div>
+    <main>
+        <section class="color-picker-container" id="colorPickers" aria-label="Color Picker Section">
+            <!-- Initial color pickers will be added dynamically -->
+            <button id="addColor" type="button">+ Add More Color</button>
+        </section>
 
-    <div class="mx-auto max-w-6xl px-4 py-8">
-        <h2 class="mb-4 text-2xl font-bold text-gray-800">
-            Why Color Matters in Design
-        </h2>
-        <p class="mb-6 text-gray-600 rounded-lg bg-white p-4 shadow">
-            Colors play a pivotal role in design, whether it's for a website, a home interior, or a corporate logo. They can trigger psychological responses and carry with them cultural associations that are vital to consider during the design process. With ColorCompare,
-            you can place colors side by side to see how they complement or contrast, helping you make informed design decisions.
-        </p>
-        <h2 class="mb-4 text-2xl font-bold text-gray-800">
-            Features of ColorCompare
-        </h2>
-        <div class="-mx-2 flex flex-wrap">
-            <div class="mb-4 w-full px-2 md:w-1/2">
-                <div class="rounded-lg bg-white p-4 shadow">
-                    <div class="mb-3 h-16 w-16 bg-green-500"></div>
-                    <h3 class="mb-2 text-lg font-bold">
-                        Side-by-Side Color Visualization
-                    </h3>
-                    <p class="text-gray-600">
-                        Compare up to seven colors side by side to visually assess how they complement or contrast with each other, enhancing your design decision-making process.
-                    </p>
+        <section class="flex flex-grow flex-row" id="colorDisplays" aria-label="Color Display Section">
+            <!-- Color display divs will be added dynamically -->
+        </section>
+
+        <section class="palette-section mx-auto max-w-6xl px-4 py-4" aria-label="Pre-built Color Palettes">
+            <h2>Try Our Pre-built Color Palettes</h2>
+            <p>Explore a variety of color combinations with our pre-built palettes. Click on a palette to apply it to the color pickers.</p>
+
+            <div id="paletteButtons">
+                <button class="paletteButton" data-palette="rainbow"></button>
+                <button class="paletteButton" data-palette="autumnBlaze"></button>
+                <button class="paletteButton" data-palette="berryDelight"></button>
+                <button class="paletteButton" data-palette="citrusZest"></button>
+                <button class="paletteButton" data-palette="verdantShades"></button>
+                <button class="paletteButton" data-palette="forestRetreat"></button>
+                <button class="paletteButton" data-palette="oceanDepths"></button>
+                <button class="paletteButton" data-palette="skyBlues"></button>
+                <button class="paletteButton" data-palette="sunsetShades"></button>
+                <button class="paletteButton" data-palette="floralWhisper"></button>
+                <button class="paletteButton" data-palette="earthTone"></button>
+                <button class="paletteButton" data-palette="monochrome"></button>
+            </div>
+        </section>
+
+        <section class="mx-auto max-w-6xl px-4 py-8" aria-label="Color Theory and Design Tips">
+            <h2 class="mb-4 text-2xl font-bold text-gray-800">
+                Why Color Matters in Design
+            </h2>
+            <p class="mb-6 text-gray-600 rounded-lg bg-white p-4 shadow">
+                Colors play a pivotal role in design, whether it's for a website, a home interior, or a corporate logo. They can trigger psychological responses and carry with them cultural associations that are vital to consider during the design process. With ColorCompare, you can place colors side by side to see how they complement or contrast, helping you make informed design decisions.
+            </p>
+
+            <h2 class="mb-4 text-2xl font-bold text-gray-800">
+                Features of ColorCompare
+            </h2>
+            <div class="-mx-2 flex flex-wrap">
+                <div class="mb-4 w-full px-2 md:w-1/2">
+                    <div class="rounded-lg bg-white p-4 shadow">
+                        <div class="mb-3 h-16 w-16 bg-green-500"></div>
+                        <h3 class="mb-2 text-lg font-bold">
+                            Side-by-Side Color Visualization
+                        </h3>
+                        <p class="text-gray-600">
+                            Compare up to seven colors side by side to visually assess how they complement or contrast with each other, enhancing your design decision-making process.
+                        </p>
+                    </div>
+                </div>
+                <div class="mb-4 w-full px-2 md:w-1/2">
+                    <div class="rounded-lg bg-white p-4 shadow">
+                        <div class="mb-3 h-16 w-16 bg-blue-500"></div>
+                        <h3 class="mb-2 text-lg font-bold">
+                            Pre-built Color Palettes
+                        </h3>
+                        <p class="text-gray-600">
+                            Explore a variety of themes with our pre-built color palettes, including Rainbow, Monochrome, Earth Tones, and more, to inspire your design projects.
+                        </p>
+                    </div>
+                </div>
+                <div class="mb-4 w-full px-2 md:w-1/2">
+                    <div class="rounded-lg bg-white p-4 shadow">
+                        <div class="mb-3 h-16 w-16 bg-red-500"></div>
+                        <h3 class="mb-2 text-lg font-bold">
+                            Interactive Color Adjustment
+                        </h3>
+                        <p class="text-gray-600">
+                            Instantly adjust HEX values and access real-time HEX, RGB, and CMYK data to precisely fine-tune and understand your color selections, enhancing your color matching process.
+                        </p>
+                    </div>
+                </div>
+                <div class="mb-4 w-full px-2 md:w-1/2">
+                    <div class="rounded-lg bg-white p-4 shadow">
+                        <div class="mb-3 h-16 w-16 bg-yellow-500"></div>
+                        <h3 class="mb-2 text-lg font-bold">
+                            User-Friendly Interface
+                        </h3>
+                        <p class="text-gray-600">
+                            ColorCompare boasts an intuitive interface that requires no learning curve – select your colors, compare them in a click, and get instant visual feedback.
+                        </p>
+                    </div>
                 </div>
             </div>
-            <div class="mb-4 w-full px-2 md:w-1/2">
-                <div class="rounded-lg bg-white p-4 shadow">
-                    <div class="mb-3 h-16 w-16 bg-blue-500"></div>
-                    <h3 class="mb-2 text-lg font-bold">
-                        Pre-built Color Palettes
-                    </h3>
-                    <p class="text-gray-600">
-                        Explore a variety of themes with our pre-built color palettes, including Rainbow, Monochrome, Earth Tones, and more, to inspire your design projects.
-                    </p>
+
+            <div class="rounded-lg bg-white p-4 shadow mb-6">
+                <h2 class="mb-4 text-2xl font-bold text-gray-800">
+                    Introduction to Color Theory
+                </h2>
+                <p class="text-gray-600">
+                    Color theory is the foundation of understanding the use of color in design. It involves a set of guidelines used to create visually appealing color combinations and is often broken into three categories: primary, secondary, and tertiary colors. These categories help designers understand the color wheel, how colors relate to one another, and how they can evoke emotions.
+                </p>
+            </div>
+
+            <div class="rounded-lg bg-white p-4 shadow mb-6">
+                <h3 class="mb-4 text-xl font-bold text-gray-800">
+                    Primary Colors
+                </h3>
+                <p class="text-gray-600">
+                    Primary colors are the building blocks of all other colors. They consist of red, blue, and yellow. By mixing these primary colors, you can create secondary and tertiary colors, expanding your palette.
+                </p>
+            </div>
+
+            <div class="rounded-lg bg-white p-4 shadow mb-6">
+                <h3 class="mb-4 text-xl font-bold text-gray-800">
+                    Complementary Colors
+                </h3>
+                <p class="text-gray-600">
+                    Complementary colors are located directly across from each other on the color wheel. They create contrast and make each other pop, which can be very effective when designing eye-catching visuals. Examples include blue and orange, or red and green.
+                </p>
+            </div>
+
+            <div class="rounded-lg bg-white p-4 shadow mb-6">
+                <h3 class="mb-4 text-xl font-bold text-gray-800">
+                    Analogous Colors
+                </h3>
+                <p class="text-gray-600">
+                    Analogous colors sit next to each other on the color wheel and create a harmonious and serene feeling. They work well for subtle and aesthetically pleasing designs, such as websites that need to convey a calming atmosphere.
+                </p>
+            </div>
+
+            <div class="rounded-lg bg-white p-4 shadow mb-6">
+                <h2 class="mb-4 text-2xl font-bold text-gray-800">
+                    Practical Tips for Choosing Colors in Design
+                </h2>
+                <p class="text-gray-600">
+                    Color selection can be challenging, especially for those who are new to design. Here are some practical tips for selecting colors that enhance your projects:
+                </p>
+                <ul class="list-disc pl-6 text-gray-600">
+                    <li class="mb-2">Know Your Audience: Different colors evoke different emotions. For example, blue tends to evoke a sense of calm and trust, making it suitable for corporate or tech websites. On the other hand, vibrant colors like red or yellow might suit entertainment or children-focused content.</li>
+                    <li class="mb-2">Stick to a Limited Palette: Using too many colors can overwhelm the viewer. A good rule of thumb is to use two to three primary colors and a few accent colors to keep your design cohesive.</li>
+                    <li class="mb-2">Use Shades and Tints: Adding black (shade) or white (tint) to your base colors creates a wider palette and provides flexibility in the design while maintaining cohesion.</li>
+                </ul>
+            </div>
+
+            <div class="rounded-lg bg-white p-4 shadow mb-6">
+                <h2 class="mb-4 text-2xl font-bold text-gray-800">
+                    Color Psychology in Design
+                </h2>
+                <p class="text-gray-600">
+                    Colors have the power to evoke emotions and influence consumer behavior. Understanding color psychology can help you make more effective design decisions:
+                </p>
+                <ul class="list-disc pl-6 text-gray-600">
+                    <li class="mb-2"><strong>Red:</strong> Represents passion, excitement, and urgency. Often used for call-to-action buttons or sale banners.</li>
+                    <li class="mb-2"><strong>Blue:</strong> Evokes a sense of trust and dependability. It's commonly used by banks and tech companies.</li>
+                    <li class="mb-2"><strong>Green:</strong> Associated with growth, health, and nature. Ideal for eco-friendly products or wellness websites.</li>
+                    <li class="mb-2"><strong>Yellow:</strong> Conveys happiness and optimism. Often used to grab attention but can be overwhelming if overused.</li>
+                </ul>
+            </div>
+
+            <div class="rounded-lg bg-white p-4 shadow mb-6">
+                <h2 class="mb-4 text-2xl font-bold text-gray-800">
+                    Inspirational Design Case Studies
+                </h2>
+                <div class="-mx-2 flex flex-wrap">
+                    <div class="mb-4 w-full px-2 md:w-1/2">
+                        <div class="rounded-lg bg-white p-4 shadow">
+                            <h3 class="mb-2 text-lg font-bold">
+                                Corporate Branding
+                            </h3>
+                            <p class="text-gray-600">
+                                Companies like Facebook and Twitter use blue prominently in their branding. Blue conveys reliability and stability, which is essential for platforms that deal with large amounts of personal data.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mb-4 w-full px-2 md:w-1/2">
+                        <div class="rounded-lg bg-white p-4 shadow">
+                            <h3 class="mb-2 text-lg font-bold">
+                                E-Commerce Design
+                            </h3>
+                            <p class="text-gray-600">
+                                Amazon uses yellow and orange to create a sense of urgency and draw attention to sales. These colors are often used on "Add to Cart" buttons or promotional banners to encourage quick action.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="mb-4 w-full px-2 md:w-1/2">
-                <div class="rounded-lg bg-white p-4 shadow">
-                    <div class="mb-3 h-16 w-16 bg-red-500"></div>
-                    <h3 class="mb-2 text-lg font-bold">
-                        Interactive Color Adjustment
-                    </h3>
-                    <p class="text-gray-600">
-                        Instantly adjust HEX values and access real-time HEX, RGB, and CMYK data to precisely fine-tune and understand your color selections, enhancing your color matching process.
-                    </p>
-                </div>
+
+            <div class="rounded-lg bg-white p-4 shadow mb-1">
+                <h2 class="mb-4 text-2xl font-bold text-gray-800">
+                    Color Palette Combinations for Common Projects
+                </h2>
+                <ul class="list-disc pl-6 text-gray-600">
+                    <li class="mb-2"><strong>Nature Blog:</strong> Green, brown, beige</li>
+                    <li class="mb-2"><strong>Fashion Website:</strong> Black, white, gold</li>
+                    <li class="mb-2"><strong>Health and Wellness App:</strong> Blue, green, soft gray</li>
+                    <li class="mb-2"><strong>Tech Startup:</strong> Dark blue, light blue, orange</li>
+                    <li class="mb-2"><strong>Children's Education:</strong> Bright primary colors like red, yellow, and blue</li>
+                </ul>
             </div>
-            <div class="mb-4 w-full px-2 md:w-1/2">
-                <div class="rounded-lg bg-white p-4 shadow">
-                    <div class="mb-3 h-16 w-16 bg-yellow-500"></div>
-                    <h3 class="mb-2 text-lg font-bold">
-                        User-Friendly Interface
-                    </h3>
-                    <p class="text-gray-600">
-                        ColorCompare boasts an intuitive interface that requires no learning curve – select your colors, compare them in a click, and get instant visual feedback.
-                    </p>
-                </div>
+        </section>
+
+        <section class="mx-auto max-w-6xl px-4 py-8" aria-label="FAQ">
+            <h2 class="mb-4 text-2xl font-bold text-gray-800">
+                Frequently Asked Questions
+            </h2>
+            <div class="rounded-lg bg-white p-4 shadow mb-6">
+                <h3 class="mb-2 text-lg font-bold">
+                    Why Is Color Contrast Important in Design?
+                </h3>
+                <p class="text-gray-600">
+                    Color contrast ensures that text is readable and elements stand out clearly, particularly for those with visual impairments. High contrast between text and background is crucial for accessibility.
+                </p>
             </div>
-        </div>
-    </div>
-    
+            <div class="rounded-lg bg-white p-4 shadow mb-1">
+                <h3 class="mb-2 text-lg font-bold">
+                    What Are Some Tools for Color Blindness Accessibility?
+                </h3>
+                <p class="text-gray-600">
+                    It's important to ensure your color scheme is accessible to everyone, including those who are color blind. Tools like Color Oracle and various plugins for web browsers can simulate how your colors appear to color-blind users.
+                </p>
+            </div>
+        </section>
+
+        <section class="mx-auto max-w-6xl px-4 py-8" aria-label="Common Mistakes">
+            <div class="rounded-lg bg-white p-4 shadow mb-6">
+                <h2 class="mb-4 text-2xl font-bold text-gray-800">
+                    Color Selection Mistakes to Avoid
+                </h2>
+                <ul class="list-disc pl-6 text-gray-600">
+                    <li class="mb-2">Using Too Many Colors: This can overwhelm the user and create a sense of chaos. Stick to a well-defined palette.</li>
+                    <li class="mb-2">Ignoring Contrast: Always ensure that text contrasts with its background to maintain readability.</li>
+                    <li class="mb-2">Relying Solely on Color to Convey Information: Remember that some users may be colorblind. Use icons, labels, and other visual cues in addition to color.</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
     <footer class="p-4 text-center">
         <p class="text-sm">
             &copy; 2024 ColorCompare created by
