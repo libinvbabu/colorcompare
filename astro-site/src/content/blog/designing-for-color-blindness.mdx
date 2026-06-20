@@ -1,0 +1,66 @@
+---
+title: "Designing for Color Blindness: A Practical Guide"
+description: "How to build designs that work for the 1 in 12 people with color vision deficiency — the common types, the pitfalls, and how to test your palette."
+pubDate: 2026-05-22
+author: "ColorCompare Team"
+tags: ["accessibility", "color blindness", "ui design"]
+seoTitle: "Designing for Color Blindness — A Practical Guide"
+seoDescription: "Learn to design for color blindness: understand the common CVD types, avoid relying on color alone, pick distinguishable palettes, and test your designs."
+cover: ["#f59e0b", "#22c55e"]
+---
+
+Roughly 1 in 12 men and 1 in 200 women have some form of color vision deficiency (CVD). That's a large slice of any audience — and designs that lean on color alone can become confusing or invisible to them. The good news: designing inclusively takes minutes once you know what to watch for.
+
+## The common types of color blindness
+
+Most CVD affects how red and green are perceived:
+
+- **Deuteranopia / deuteranomaly** — reduced sensitivity to green (the most common).
+- **Protanopia / protanomaly** — reduced sensitivity to red.
+- **Tritanopia** — rarer; affects blue-yellow perception.
+- **Achromatopsia** — total color blindness, seeing only in grayscale (very rare).
+
+The practical upshot: **red and green can look identical** to a large group of people. The classic "red means error, green means success" pattern fails for exactly the users who most need clarity.
+
+## The golden rule: never rely on color alone
+
+This is the single most important principle, and it's a core WCAG requirement. If color is the *only* thing communicating meaning, add a second cue:
+
+- Pair status colors with an **icon** (✓, ✕, ⚠).
+- Add a **text label** like "Error" or "In stock".
+- Use **shape, position, or underlines** for links — not just a color change.
+
+Once meaning survives in grayscale, it survives every type of color blindness.
+
+## Test your palette with a simulator
+
+You can't rely on your own eyes here — you need to see what others see. The [Color Blindness Simulator](/tools/color-blindness-simulator/) previews your colors as they'd appear under protanopia, deuteranopia, tritanopia, and grayscale. If two colors collapse into one in any simulation, that's your signal to add another cue or pick more distinct hues.
+
+This is especially important for:
+
+- **Status colors** — make sure success and error stay distinguishable.
+- **Charts and graphs** — data series must be separable without relying on hue.
+- **Maps and legends** — categories need to be tellable apart.
+
+## Choose distinguishable color pairs
+
+Some combinations are far safer than others. Pairs that differ in **lightness**, not just hue, stay distinct for almost everyone — because lightness contrast survives color blindness. So a light blue and a dark blue read clearly even when hue perception is reduced.
+
+When you're choosing data colors or status colors, compare candidates in [Color Compare](/tools/color-compare/) and favor pairs with an obvious lightness difference, not just a hue difference.
+
+## Contrast still matters
+
+Color blindness and low contrast are separate problems, but they compound each other. A palette that's hard to read *and* relies on hue is doubly inaccessible. Run your text-and-background pairs through the [Contrast Checker](/tools/contrast-checker/) to make sure they meet WCAG AA (4.5:1 for body text). Our full [accessible UI colors](/blog/accessible-ui-colors/) guide covers the contrast side in depth.
+
+## Build inclusive palettes from the start
+
+It's far easier to design accessibly than to retrofit. When you're choosing an interface palette, start from one that's already built for readable roles — the [UI color inspiration](/colors/ui-color-inspiration/) collection lists background, surface, text, and accent colors tuned to pass contrast.
+
+## A quick CVD checklist
+
+- Meaning never depends on color alone — there's always an icon, label, or shape.
+- The palette survives the [Color Blindness Simulator](/tools/color-blindness-simulator/).
+- Important color pairs differ in lightness, not just hue.
+- Text and backgrounds meet WCAG AA contrast.
+
+Designing for color blindness isn't a constraint — it's just good design. The changes that help CVD users (clear labels, strong lightness contrast, redundant cues) make your product easier for *everyone* to use.

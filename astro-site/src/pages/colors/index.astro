@@ -3,12 +3,19 @@ import BaseLayout from "../../components/layout/BaseLayout.astro";
 import Container from "../../components/common/Container.astro";
 import Breadcrumbs from "../../components/common/Breadcrumbs.astro";
 import AdSlot from "../../components/ads/AdSlot.astro";
-import { colorPages } from "../../data/colors";
+import { colorPages, colorSections } from "../../data/colors";
 import { breadcrumbSchema } from "../../utils/schema";
 
-const title = "Color Palettes & Combinations — Browse by Use Case";
+const title = "Color Palettes & Combinations — Browse by Color, Mood & Use Case";
 const description =
-  "Browse curated color palettes with HEX codes — blue palettes, black and gold, pastels, website color schemes, wedding palettes, logo combinations, and more.";
+  "Browse 27 curated color palette collections with HEX codes — organized by color family, style and mood, season and occasion, and project use case.";
+
+const sections = colorSections
+  .map((section) => ({
+    ...section,
+    pages: colorPages.filter((page) => page.section === section.title),
+  }))
+  .filter((section) => section.pages.length > 0);
 
 const schemas = [
   breadcrumbSchema([
@@ -25,30 +32,38 @@ const schemas = [
     <header class="colors-index__hero">
       <h1>Color palettes &amp; combinations</h1>
       <p>
-        Curated, ready-to-use color palettes for every kind of project. Click any
-        swatch to copy its HEX code, or open a collection for tips and use cases.
+        Curated, ready-to-use color palettes for every kind of project, grouped by
+        color family, mood, season, and use case. Click any swatch to copy its HEX
+        code, or open a collection for tips and use cases.
       </p>
     </header>
 
-    <div class="colors-index__grid">
-      {
-        colorPages.map((page) => (
-          <a class="cx-card" href={`/colors/${page.slug}/`}>
-            <span class="cx-card__swatches" aria-hidden="true">
-              {page.palettes[0].colors.slice(0, 6).map((c) => (
-                <span style={`background:${c}`} />
-              ))}
-            </span>
-            <span class="cx-card__body">
-              <strong>{page.title}</strong>
-              <span>{page.description}</span>
-            </span>
-          </a>
-        ))
-      }
-    </div>
-
-    <AdSlot slot="" format="horizontal" />
+    {
+      sections.map((section, i) => (
+        <section class="colors-index__section">
+          <div class="colors-index__section-head">
+            <h2>{section.title}</h2>
+            <p>{section.description}</p>
+          </div>
+          <div class="colors-index__grid">
+            {section.pages.map((page) => (
+              <a class="cx-card" href={`/colors/${page.slug}/`}>
+                <span class="cx-card__swatches" aria-hidden="true">
+                  {page.palettes[0].colors.slice(0, 6).map((c) => (
+                    <span style={`background:${c}`} />
+                  ))}
+                </span>
+                <span class="cx-card__body">
+                  <strong>{page.title}</strong>
+                  <span>{page.description}</span>
+                </span>
+              </a>
+            ))}
+          </div>
+          {i === 0 && <AdSlot slot="" format="horizontal" />}
+        </section>
+      ))
+    }
   </Container>
 </BaseLayout>
 
@@ -56,6 +71,10 @@ const schemas = [
   .colors-index__hero { max-width: 44rem; margin: 1.5rem 0 2.5rem; }
   .colors-index__hero h1 { font-size: clamp(2rem, 5.5vw, 3rem); margin-bottom: 0.75rem; }
   .colors-index__hero p { color: var(--cc-muted); font-size: 1.1rem; }
+  .colors-index__section { margin-bottom: 3rem; }
+  .colors-index__section-head { margin-bottom: 1.25rem; }
+  .colors-index__section-head h2 { font-size: clamp(1.4rem, 3.5vw, 1.9rem); margin-bottom: 0.3rem; }
+  .colors-index__section-head p { color: var(--cc-muted); font-size: 0.98rem; max-width: 44rem; }
   .colors-index__grid {
     display: grid;
     grid-template-columns: 1fr;

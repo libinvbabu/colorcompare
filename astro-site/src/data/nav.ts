@@ -41,7 +41,8 @@ export const footerColumns: FooterColumn[] = [
     links: [
       { label: "Blog", href: "/blog/" },
       { label: "Color Theory Basics", href: "/blog/color-theory-basics/" },
-      { label: "Website Color Combinations", href: "/blog/best-website-color-combinations/" },
+      { label: "Color Formats Explained", href: "/blog/color-formats-explained/" },
+      { label: "Dark Mode Palettes Guide", href: "/blog/dark-mode-color-guide/" },
       { label: "Accessible UI Colors", href: "/blog/accessible-ui-colors/" },
     ],
   },
@@ -49,9 +50,9 @@ export const footerColumns: FooterColumn[] = [
     title: "Popular Colors",
     links: [
       { label: "Blue Palettes", href: "/colors/blue-palettes/" },
-      { label: "Black & Gold", href: "/colors/black-and-gold/" },
-      { label: "Pastel Palettes", href: "/colors/pastel-palettes/" },
-      { label: "Website Color Schemes", href: "/colors/website-color-schemes/" },
+      { label: "Green Palettes", href: "/colors/green-palettes/" },
+      { label: "Dark Mode Palettes", href: "/colors/dark-mode-palettes/" },
+      { label: "Gradient Palettes", href: "/colors/gradient-color-palettes/" },
       { label: "All Palettes", href: "/colors/" },
     ],
   },

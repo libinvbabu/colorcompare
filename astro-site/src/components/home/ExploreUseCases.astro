@@ -2,6 +2,8 @@
 import Container from "../common/Container.astro";
 import SectionHeader from "../common/SectionHeader.astro";
 import { colorPages } from "../../data/colors";
+
+const featured = colorPages.filter((page) => page.featured);
 ---
 
 <section class="cc-section" id="palettes">
@@ -14,7 +16,7 @@ import { colorPages } from "../../data/colors";
 
     <div class="explore-grid">
       {
-        colorPages.map((page) => (
+        featured.map((page) => (
           <a class="explore-card" href={`/colors/${page.slug}/`}>
             <span class="explore-card__swatches" aria-hidden="true">
               {page.palettes[0].colors.slice(0, 5).map((c) => (
