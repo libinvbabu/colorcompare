@@ -38,7 +38,10 @@ const year = 2026;
     <div class="cc-footer__bottom">
       <p>© {year} {SITE.name}. All rights reserved.</p>
       <p class="cc-footer__note">
-        Free color tools · No signup required · Made for designers & developers
+        Crafted with a love for color by
+        <a href="https://www.libin.in" target="_blank" rel="noopener" class="cc-footer__author">
+          Libin V Babu
+        </a> ✨
       </p>
     </div>
   </Container>
@@ -109,6 +112,13 @@ const year = 2026;
   }
   .cc-footer__note {
     color: var(--cc-faint);
+  }
+  .cc-footer__author {
+    color: var(--cc-primary-dark);
+    font-weight: 600;
+  }
+  .cc-footer__author:hover {
+    text-decoration: underline;
   }
 
   @media (min-width: 720px) {

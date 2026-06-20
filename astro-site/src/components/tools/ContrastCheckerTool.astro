@@ -7,14 +7,14 @@
     <div class="cc-field">
       <label class="cc-field__label" for="ct-fg">Text color (foreground)</label>
       <div class="cc-colorinput">
-        <input type="color" id="ct-fg-pick" value="#111827" aria-label="Pick text color" data-fg-pick />
+        <button type="button" class="cc-swatch-btn" aria-label="Pick text color" data-fg-pick></button>
         <input type="text" id="ct-fg" value="#111827" aria-label="Text color hex" data-fg />
       </div>
     </div>
     <div class="cc-field">
       <label class="cc-field__label" for="ct-bg">Background color</label>
       <div class="cc-colorinput">
-        <input type="color" id="ct-bg-pick" value="#ffffff" aria-label="Pick background color" data-bg-pick />
+        <button type="button" class="cc-swatch-btn" aria-label="Pick background color" data-bg-pick></button>
         <input type="text" id="ct-bg" value="#ffffff" aria-label="Background color hex" data-bg />
       </div>
     </div>
@@ -101,14 +101,15 @@
 </style>
 
 <script>
-  import { normalizeHex, parseColor, evaluateWcag } from "../../utils/color";
+  import { parseColor, evaluateWcag, rgbToHex } from "../../utils/color";
+  import { attachColorPicker } from "../../scripts/colorPicker";
 
   const root = document.querySelector<HTMLElement>("[data-contrast-tool]");
   if (root) {
     const fg = root.querySelector<HTMLInputElement>("[data-fg]")!;
     const bg = root.querySelector<HTMLInputElement>("[data-bg]")!;
-    const fgPick = root.querySelector<HTMLInputElement>("[data-fg-pick]")!;
-    const bgPick = root.querySelector<HTMLInputElement>("[data-bg-pick]")!;
+    const fgPick = root.querySelector<HTMLButtonElement>("[data-fg-pick]")!;
+    const bgPick = root.querySelector<HTMLButtonElement>("[data-bg-pick]")!;
     const ratioEl = root.querySelector<HTMLElement>("[data-ratio]")!;
     const preview = root.querySelector<HTMLElement>("[data-preview]")!;
     const cells = {
@@ -137,41 +138,45 @@
       preview.style.color = fg.value;
     }
 
-    function bindText(input: HTMLInputElement, picker: HTMLInputElement) {
+    const fgPicker = attachColorPicker({
+      trigger: fgPick,
+      value: "#111827",
+      onInput: (hex) => {
+        fg.value = hex.toUpperCase();
+        update();
+      },
+    });
+    const bgPicker = attachColorPicker({
+      trigger: bgPick,
+      value: "#ffffff",
+      onInput: (hex) => {
+        bg.value = hex.toUpperCase();
+        update();
+      },
+    });
+
+    function bindText(input: HTMLInputElement, picker: { setValue(h: string): void }) {
       input.addEventListener("input", () => {
-        const norm = normalizeHex(input.value);
         const wrap = input.closest(".cc-colorinput");
-        if (norm) {
+        const rgb = parseColor(input.value);
+        if (rgb) {
           wrap?.removeAttribute("data-invalid");
-          picker.value = norm;
-          update();
-        } else if (parseColor(input.value)) {
-          wrap?.removeAttribute("data-invalid");
+          picker.setValue(rgbToHex(rgb));
           update();
         } else {
           wrap?.setAttribute("data-invalid", "");
         }
       });
     }
-    function bindPicker(picker: HTMLInputElement, input: HTMLInputElement) {
-      picker.addEventListener("input", () => {
-        input.value = picker.value.toUpperCase();
-        update();
-      });
-    }
-
-    bindText(fg, fgPick);
-    bindText(bg, bgPick);
-    bindPicker(fgPick, fg);
-    bindPicker(bgPick, bg);
+    bindText(fg, fgPicker);
+    bindText(bg, bgPicker);
 
     root.querySelector<HTMLButtonElement>("[data-swap]")!.addEventListener("click", () => {
       const f = fg.value;
       fg.value = bg.value;
       bg.value = f;
-      const fp = fgPick.value;
-      fgPick.value = bgPick.value;
-      bgPick.value = fp;
+      fgPicker.setValue(parseColor(fg.value) ? rgbToHex(parseColor(fg.value)!) : "#000000");
+      bgPicker.setValue(parseColor(bg.value) ? rgbToHex(parseColor(bg.value)!) : "#ffffff");
       update();
     });
 

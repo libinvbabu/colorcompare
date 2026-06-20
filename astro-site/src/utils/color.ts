@@ -187,6 +187,52 @@ export function hslToRgb({ h, s, l }: HSL): RGB {
   };
 }
 
+export interface HSV {
+  h: number;
+  s: number;
+  v: number;
+}
+
+export function rgbToHsv({ r, g, b }: RGB): HSV {
+  const rn = r / 255;
+  const gn = g / 255;
+  const bn = b / 255;
+  const max = Math.max(rn, gn, bn);
+  const min = Math.min(rn, gn, bn);
+  const delta = max - min;
+  let h = 0;
+  if (delta !== 0) {
+    if (max === rn) h = ((gn - bn) / delta) % 6;
+    else if (max === gn) h = (bn - rn) / delta + 2;
+    else h = (rn - gn) / delta + 4;
+    h *= 60;
+    if (h < 0) h += 360;
+  }
+  const s = max === 0 ? 0 : delta / max;
+  return { h: Math.round(h), s, v: max };
+}
+
+export function hsvToRgb({ h, s, v }: HSV): RGB {
+  const hn = ((h % 360) + 360) % 360;
+  const c = v * s;
+  const x = c * (1 - Math.abs(((hn / 60) % 2) - 1));
+  const m = v - c;
+  let r = 0,
+    g = 0,
+    b = 0;
+  if (hn < 60) [r, g, b] = [c, x, 0];
+  else if (hn < 120) [r, g, b] = [x, c, 0];
+  else if (hn < 180) [r, g, b] = [0, c, x];
+  else if (hn < 240) [r, g, b] = [0, x, c];
+  else if (hn < 300) [r, g, b] = [x, 0, c];
+  else [r, g, b] = [c, 0, x];
+  return {
+    r: round((r + m) * 255),
+    g: round((g + m) * 255),
+    b: round((b + m) * 255),
+  };
+}
+
 export function rgbToCmyk({ r, g, b }: RGB): CMYK {
   const rn = r / 255;
   const gn = g / 255;

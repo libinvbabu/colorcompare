@@ -1,19 +1,21 @@
 ---
-// Shades & Tints — generate a 20-step scale around a base color.
+// Shades & Tints — a visual 20-step scale around a base color.
 ---
 
 <div class="cc-tool" data-shades>
   <div class="cc-field st__base">
     <label class="cc-field__label" for="st-hex">Base color</label>
     <div class="cc-colorinput">
-      <input type="color" id="st-hex-pick" value="#6d5dfc" aria-label="Pick base color" data-pick />
+      <button type="button" class="cc-swatch-btn" aria-label="Pick base color" data-pick></button>
       <input type="text" id="st-hex" value="#6D5DFC" aria-label="Base color hex" data-hex />
     </div>
   </div>
 
+  <div class="st__scalebar" data-scalebar aria-hidden="true"></div>
+
   <div class="st__block">
     <div class="st__row-head">
-      <h3>Tints <span>(lighter)</span></h3>
+      <h3>Tints <span>lighter</span></h3>
       <button type="button" class="cc-copy" data-copy-tints>Copy tints</button>
     </div>
     <div class="st__scale" data-tints></div>
@@ -21,7 +23,7 @@
 
   <div class="st__block">
     <div class="st__row-head">
-      <h3>Shades <span>(darker)</span></h3>
+      <h3>Shades <span>darker</span></h3>
       <button type="button" class="cc-copy" data-copy-shades>Copy shades</button>
     </div>
     <div class="st__scale" data-shades></div>
@@ -29,48 +31,62 @@
 </div>
 
 <style>
-  .st__base { max-width: 22rem; margin-bottom: 1.5rem; }
+  .st__base { max-width: 22rem; margin-bottom: 1.25rem; }
+  .st__scalebar {
+    height: 40px;
+    border-radius: var(--cc-radius-pill);
+    border: 0;
+    margin-bottom: 1.75rem;
+  }
   .st__block + .st__block { margin-top: 1.5rem; }
   .st__row-head {
     display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 0.6rem;
+    margin-bottom: 0.7rem;
   }
-  .st__row-head h3 { font-size: 1rem; }
-  .st__row-head h3 span { color: var(--cc-faint); font-weight: 500; font-size: 0.85rem; }
-  .st__scale {
+  .st__row-head h3 { font-size: 1.05rem; }
+  .st__row-head h3 span { color: var(--cc-faint); font-weight: 500; font-size: 0.85rem; margin-left: 0.4rem; }
+</style>
+
+<!-- Global: swatch chips are injected via innerHTML. -->
+<style is:global>
+  [data-shades] .st__scale {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 0.4rem;
+    gap: 0.5rem;
   }
-  .st__chip {
+  [data-shades] .st-chip {
     border: 1px solid var(--cc-border);
-    border-radius: var(--cc-radius-sm);
+    border-radius: var(--cc-radius-md);
     overflow: hidden;
     cursor: pointer;
     background: var(--cc-surface);
     padding: 0;
     text-align: center;
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
   }
-  .st__chip span.sw { display: block; height: 48px; }
-  .st__chip span.hx {
-    display: block; padding: 0.3rem 0.2rem; font-family: var(--cc-font-mono);
-    font-size: 0.68rem; text-transform: uppercase;
+  [data-shades] .st-chip:hover { transform: translateY(-3px); box-shadow: var(--cc-shadow-soft); }
+  [data-shades] .st-chip__sw { display: block; height: 64px; }
+  [data-shades] .st-chip__hx {
+    display: block; padding: 0.4rem 0.2rem; font-family: var(--cc-font-mono);
+    font-size: 0.72rem; text-transform: uppercase; color: var(--cc-text);
   }
   @media (min-width: 720px) {
-    .st__scale { grid-template-columns: repeat(10, 1fr); }
+    [data-shades] .st__scale { grid-template-columns: repeat(10, 1fr); }
   }
 </style>
 
 <script>
   import { normalizeHex, generateTints, generateShades } from "../../utils/color";
   import { copyText, flashCopied } from "../../scripts/clipboard";
+  import { attachColorPicker } from "../../scripts/colorPicker";
 
   const root = document.querySelector<HTMLElement>("[data-shades]");
   if (root) {
-    const hex = root.querySelector<HTMLInputElement>("[data-hex]")!;
-    const pick = root.querySelector<HTMLInputElement>("[data-pick]")!;
+    const hexInput = root.querySelector<HTMLInputElement>("[data-hex]")!;
+    const trigger = root.querySelector<HTMLButtonElement>("[data-pick]")!;
     const tintsEl = root.querySelector<HTMLElement>("[data-tints]")!;
     const shadesEl = root.querySelector<HTMLElement>("[data-shades]")!;
+    const scalebar = root.querySelector<HTMLElement>("[data-scalebar]")!;
     let base = "#6d5dfc";
     let tints: string[] = [];
     let shades: string[] = [];
@@ -79,10 +95,10 @@
       return list
         .map(
           (c) =>
-            `<button type="button" class="st__chip" data-copy="${c}" aria-label="Copy ${c.toUpperCase()}">
-            <span class="sw" style="background:${c}"></span>
-            <span class="hx">${c.toUpperCase()}</span>
-          </button>`
+            `<button type="button" class="st-chip" data-copy="${c}" aria-label="Copy ${c.toUpperCase()}">
+              <span class="st-chip__sw" style="background:${c}"></span>
+              <span class="st-chip__hx">${c.toUpperCase()}</span>
+            </button>`
         )
         .join("");
     }
@@ -90,7 +106,7 @@
       el.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((btn) => {
         btn.addEventListener("click", async () => {
           if (await copyText(btn.dataset.copy!)) {
-            flashCopied(btn.querySelector(".hx") as HTMLElement, "✓");
+            flashCopied(btn.querySelector(".st-chip__hx") as HTMLElement, "✓ Copied");
           }
         });
       });
@@ -102,24 +118,32 @@
       shadesEl.innerHTML = chips(shades);
       wire(tintsEl);
       wire(shadesEl);
+      // Continuous scale: lightest tint -> base -> darkest shade.
+      const full = [...[...tints].reverse(), base, ...shades];
+      scalebar.style.background = `linear-gradient(90deg, ${full.join(", ")})`;
     }
 
-    hex.addEventListener("input", () => {
-      const norm = normalizeHex(hex.value);
-      const wrap = hex.closest(".cc-colorinput");
+    const picker = attachColorPicker({
+      trigger,
+      value: base,
+      onInput: (h) => {
+        base = h;
+        hexInput.value = h.toUpperCase();
+        render();
+      },
+    });
+
+    hexInput.addEventListener("input", () => {
+      const norm = normalizeHex(hexInput.value);
+      const wrap = hexInput.closest(".cc-colorinput");
       if (norm) {
         wrap?.removeAttribute("data-invalid");
         base = norm;
-        pick.value = norm;
+        picker.setValue(norm);
         render();
       } else {
         wrap?.setAttribute("data-invalid", "");
       }
-    });
-    pick.addEventListener("input", () => {
-      base = pick.value;
-      hex.value = pick.value.toUpperCase();
-      render();
     });
     root.querySelector<HTMLButtonElement>("[data-copy-tints]")!.addEventListener("click", async (e) => {
       if (await copyText(tints.map((c) => c.toUpperCase()).join(", "))) flashCopied(e.currentTarget as HTMLElement, "Copied!");

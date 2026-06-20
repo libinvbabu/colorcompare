@@ -1,11 +1,13 @@
 ---
 import Button from "../common/Button.astro";
+import Container from "../common/Container.astro";
 import ProductPreview from "./ProductPreview.astro";
 
 const badges = ["Free tools", "Accessibility checks", "HEX · RGB · HSL · CMYK", "No signup"];
 ---
 
 <section class="hero">
+  <Container>
   <div class="hero__grid">
     <div class="hero__copy">
       <p class="hero__eyebrow">
@@ -32,6 +34,7 @@ const badges = ["Free tools", "Accessibility checks", "HEX · RGB · HSL · CMYK
       <ProductPreview />
     </div>
   </div>
+  </Container>
 </section>
 
 <style>

@@ -80,6 +80,9 @@
     evaluateWcag,
   } from "../../utils/color";
   import { copyText, flashCopied } from "../../scripts/clipboard";
+  import { attachColorPicker } from "../../scripts/colorPicker";
+
+  type Handle = { setValue(h: string): void };
 
   const root = document.querySelector<HTMLElement>("[data-compare]");
   if (root) {
@@ -92,73 +95,97 @@
     const judgeEl = root.querySelector<HTMLElement>("[data-judge]")!;
 
     let colors = ["#6d5dfc", "#ff4fa3"];
+    let pickers: Handle[] = [];
 
-    function render() {
+    // Rebuild all cards from scratch (init / add / remove).
+    function buildCards() {
+      pickers = [];
       grid.innerHTML = "";
       colors.forEach((hex, i) => {
-        const rgb = hexToRgb(hex)!;
-        const hsl = rgbToHsl(rgb);
-        const text = readableTextColor(rgb);
         const card = document.createElement("div");
         card.className = "ccard";
         card.setAttribute("role", "listitem");
+        card.dataset.card = String(i);
         card.innerHTML = `
-          <div class="ccard__swatch" style="background:${hex};color:${text}">
-            <span class="cc-mono">${hex.toUpperCase()}</span>
+          <div class="ccard__swatch" data-swatch>
+            <span class="cc-mono" data-swatch-hex></span>
             ${colors.length > 2 ? `<button type="button" class="ccard__remove" aria-label="Remove color" data-remove="${i}">✕</button>` : ""}
           </div>
           <div class="cc-colorinput">
-            <input type="color" value="${hex}" aria-label="Pick color ${i + 1}" data-picker="${i}" />
-            <input type="text" value="${hex.toUpperCase()}" aria-label="Hex value ${i + 1}" data-hex="${i}" />
+            <button type="button" class="cc-swatch-btn" aria-label="Pick color ${i + 1}" data-picker="${i}"></button>
+            <input type="text" aria-label="Hex value ${i + 1}" data-hex="${i}" />
           </div>
           <div class="cc-values">
-            <div class="cc-value"><span class="cc-value__label">RGB</span><span class="cc-value__val">${formatRgb(rgb)}</span><button class="cc-copy" data-copy="${formatRgb(rgb)}">Copy</button></div>
-            <div class="cc-value"><span class="cc-value__label">HSL</span><span class="cc-value__val">${formatHsl(hsl)}</span><button class="cc-copy" data-copy="${formatHsl(hsl)}">Copy</button></div>
+            <div class="cc-value"><span class="cc-value__label">RGB</span><span class="cc-value__val" data-rgb></span><button class="cc-copy" data-copy-rgb>Copy</button></div>
+            <div class="cc-value"><span class="cc-value__label">HSL</span><span class="cc-value__val" data-hsl></span><button class="cc-copy" data-copy-hsl>Copy</button></div>
           </div>
         `;
         grid.appendChild(card);
-      });
-      wireCards();
-      renderSelects();
-      updateContrast();
-      addBtn.disabled = colors.length >= 5;
-      addBtn.style.opacity = colors.length >= 5 ? "0.5" : "1";
-    }
 
-    function wireCards() {
-      grid.querySelectorAll<HTMLInputElement>("[data-hex]").forEach((input) => {
-        input.addEventListener("input", () => {
-          const idx = Number(input.dataset.hex);
-          const norm = normalizeHex(input.value);
-          const wrap = input.closest(".cc-colorinput");
+        const hexInput = card.querySelector<HTMLInputElement>("[data-hex]")!;
+        const trigger = card.querySelector<HTMLButtonElement>("[data-picker]")!;
+        const handle = attachColorPicker({
+          trigger,
+          value: hex,
+          onInput: (h) => {
+            colors[i] = h;
+            hexInput.value = h.toUpperCase();
+            updateCard(i);
+            updateContrast();
+            renderSelects();
+          },
+        });
+        pickers.push(handle);
+
+        hexInput.addEventListener("input", () => {
+          const norm = normalizeHex(hexInput.value);
+          const wrap = hexInput.closest(".cc-colorinput");
           if (norm) {
             wrap?.removeAttribute("data-invalid");
-            colors[idx] = norm;
-            render();
-            const next = grid.querySelectorAll<HTMLInputElement>("[data-hex]")[idx];
-            next?.focus();
+            colors[i] = norm;
+            handle.setValue(norm);
+            updateCard(i);
+            updateContrast();
+            renderSelects();
           } else {
             wrap?.setAttribute("data-invalid", "");
           }
         });
-      });
-      grid.querySelectorAll<HTMLInputElement>("[data-picker]").forEach((input) => {
-        input.addEventListener("input", () => {
-          colors[Number(input.dataset.picker)] = input.value;
-          render();
+
+        card.querySelector<HTMLButtonElement>("[data-remove]")?.addEventListener("click", () => {
+          colors.splice(i, 1);
+          buildCards();
+          renderSelects();
+          updateContrast();
         });
-      });
-      grid.querySelectorAll<HTMLButtonElement>("[data-remove]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          colors.splice(Number(btn.dataset.remove), 1);
-          render();
+        card.querySelector<HTMLButtonElement>("[data-copy-rgb]")!.addEventListener("click", async (e) => {
+          if (await copyText(formatRgb(hexToRgb(colors[i])!))) flashCopied(e.currentTarget as HTMLElement);
         });
-      });
-      grid.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((btn) => {
-        btn.addEventListener("click", async () => {
-          if (await copyText(btn.dataset.copy!)) flashCopied(btn);
+        card.querySelector<HTMLButtonElement>("[data-copy-hsl]")!.addEventListener("click", async (e) => {
+          if (await copyText(formatHsl(rgbToHsl(hexToRgb(colors[i])!)))) flashCopied(e.currentTarget as HTMLElement);
         });
+
+        updateCard(i);
       });
+      addBtn.disabled = colors.length >= 5;
+      addBtn.style.opacity = colors.length >= 5 ? "0.5" : "1";
+    }
+
+    // Update just one card's displayed values (no DOM rebuild).
+    function updateCard(i: number) {
+      const card = grid.querySelector<HTMLElement>(`[data-card="${i}"]`);
+      if (!card) return;
+      const rgb = hexToRgb(colors[i])!;
+      const hsl = rgbToHsl(rgb);
+      const text = readableTextColor(rgb);
+      const swatch = card.querySelector<HTMLElement>("[data-swatch]")!;
+      swatch.style.background = colors[i];
+      swatch.style.color = text;
+      card.querySelector<HTMLElement>("[data-swatch-hex]")!.textContent = colors[i].toUpperCase();
+      const hexInput = card.querySelector<HTMLInputElement>("[data-hex]")!;
+      if (document.activeElement !== hexInput) hexInput.value = colors[i].toUpperCase();
+      card.querySelector<HTMLElement>("[data-rgb]")!.textContent = formatRgb(rgb);
+      card.querySelector<HTMLElement>("[data-hsl]")!.textContent = formatHsl(hsl);
     }
 
     function renderSelects() {
@@ -186,13 +213,17 @@
     addBtn.addEventListener("click", () => {
       if (colors.length < 5) {
         colors.push("#16c8f3");
-        render();
+        buildCards();
+        renderSelects();
+        updateContrast();
       }
     });
     selA.addEventListener("change", updateContrast);
     selB.addEventListener("change", updateContrast);
 
-    render();
+    buildCards();
+    renderSelects();
+    updateContrast();
   }
 </script>
 

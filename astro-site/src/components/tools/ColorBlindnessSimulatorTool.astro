@@ -21,41 +21,50 @@
 
 <style>
   .cvd__inputs { margin-bottom: 1.5rem; }
-  .cvd__stops { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
-  .cvd__add { margin-top: 0.6rem; }
-  .cvd__stop { position: relative; }
-  .cvd__stop input[type="color"] {
-    width: 46px; height: 46px; border: 1px solid var(--cc-border);
-    border-radius: 12px; padding: 0; cursor: pointer; background: none;
+  .cvd__add { margin-top: 0.75rem; }
+  .cvd__note {
+    margin-top: 1.5rem;
+    font-size: 0.82rem;
+    color: var(--cc-muted);
+    background: var(--cc-surface-soft);
+    border: 1px solid var(--cc-border);
+    border-radius: var(--cc-radius-sm);
+    padding: 0.8rem 0.9rem;
   }
-  .cvd__stop button {
-    position: absolute; top: -6px; right: -6px; width: 20px; height: 20px;
-    border-radius: 50%; border: none; background: var(--cc-text); color: #fff;
-    font-size: 0.7rem; cursor: pointer; display: grid; place-items: center;
+</style>
+
+<!-- Global: injected via innerHTML, so scoped styles wouldn't reach them. -->
+<style is:global>
+  [data-cvd] .cvd__stops { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+  [data-cvd] .cvd__stop { position: relative; }
+  [data-cvd] .cvd__stop .cc-swatch-btn { width: 46px; height: 46px; border-radius: 12px; }
+  [data-cvd] .cvd__stop-remove {
+    position: absolute; top: -7px; right: -7px; width: 20px; height: 20px;
+    border-radius: 50%; border: 2px solid var(--cc-surface); background: var(--cc-text);
+    color: #fff; font-size: 0.65rem; cursor: pointer; display: grid; place-items: center; padding: 0;
   }
-  .cvd__rows { display: grid; gap: 0.75rem; }
-  .cvd__row {
+  [data-cvd] .cvd__rows { display: grid; gap: 0.75rem; }
+  [data-cvd] .cvd__row {
     display: grid;
-    gap: 0.5rem;
-    padding: 0.85rem;
+    gap: 0.85rem;
+    padding: 1rem 1.1rem;
     border: 1px solid var(--cc-border);
     border-radius: var(--cc-radius-md);
-    background: var(--cc-surface-soft);
+    background: var(--cc-surface);
+    box-shadow: var(--cc-shadow-soft);
   }
-  .cvd__row-label { font-size: 0.82rem; font-weight: 700; }
-  .cvd__row-label small { display: block; font-weight: 500; color: var(--cc-faint); }
-  .cvd__swatches { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-  .cvd__swatches span {
-    flex: 1; min-width: 40px; height: 44px; border-radius: 8px;
-    border: 1px solid var(--cc-border);
-  }
+  [data-cvd] .cvd__row-label { font-size: 0.92rem; font-weight: 700; color: var(--cc-text); }
+  [data-cvd] .cvd__row-label small { display: block; font-weight: 500; color: var(--cc-faint); font-size: 0.78rem; margin-top: 0.15rem; }
+  [data-cvd] .cvd__swatches { display: flex; gap: 0; border-radius: var(--cc-radius-sm); overflow: hidden; border: 1px solid var(--cc-border); }
+  [data-cvd] .cvd__swatches span { flex: 1; height: 52px; }
   @media (min-width: 760px) {
-    .cvd__row { grid-template-columns: 180px 1fr; align-items: center; }
+    [data-cvd] .cvd__row { grid-template-columns: 190px 1fr; align-items: center; }
   }
 </style>
 
 <script>
   import { hexToRgb, rgbToHex, simulateColorVision, type ColorVision } from "../../utils/color";
+  import { attachColorPicker } from "../../scripts/colorPicker";
 
   const root = document.querySelector<HTMLElement>("[data-cvd]");
   if (root) {
@@ -76,14 +85,19 @@
     function renderStops() {
       stopsEl.innerHTML = colors
         .map(
-          (c, i) =>
-            `<span class="cvd__stop"><input type="color" value="${c}" aria-label="Color ${i + 1}" data-stop="${i}" />${colors.length > 2 ? `<button type="button" aria-label="Remove color" data-remove="${i}">✕</button>` : ""}</span>`
+          (_, i) =>
+            `<span class="cvd__stop"><button type="button" class="cc-swatch-btn" aria-label="Color ${i + 1}" data-stop="${i}"></button>${colors.length > 2 ? `<button type="button" class="cvd__stop-remove" aria-label="Remove color" data-remove="${i}">✕</button>` : ""}</span>`
         )
         .join("");
-      stopsEl.querySelectorAll<HTMLInputElement>("[data-stop]").forEach((inp) => {
-        inp.addEventListener("input", () => {
-          colors[Number(inp.dataset.stop)] = inp.value;
-          renderRows();
+      stopsEl.querySelectorAll<HTMLButtonElement>("[data-stop]").forEach((btn) => {
+        const i = Number(btn.dataset.stop);
+        attachColorPicker({
+          trigger: btn,
+          value: colors[i],
+          onInput: (h) => {
+            colors[i] = h;
+            renderRows();
+          },
         });
       });
       stopsEl.querySelectorAll<HTMLButtonElement>("[data-remove]").forEach((btn) => {

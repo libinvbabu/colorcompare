@@ -35,7 +35,7 @@ const isRgbInput = mode === "rgb-to-hex";
               {mode === "cmyk-converter" ? "Color (HEX or RGB)" : "HEX color"}
             </label>
             <div class="cc-colorinput">
-              <input type="color" id="cv-hex-pick" value="#6d5dfc" aria-label="Pick color" data-pick />
+              <button type="button" class="cc-swatch-btn" aria-label="Pick color" data-pick></button>
               <input type="text" id="cv-hex" value="#6D5DFC" aria-label="Color value" data-hex />
             </div>
           </div>
@@ -91,6 +91,7 @@ const isRgbInput = mode === "rgb-to-hex";
     type RGB,
   } from "../../utils/color";
   import { copyText, flashCopied } from "../../scripts/clipboard";
+  import { attachColorPicker } from "../../scripts/colorPicker";
 
   const root = document.querySelector<HTMLElement>("[data-converter]");
   if (root) {
@@ -169,24 +170,30 @@ const isRgbInput = mode === "rgb-to-hex";
       sync();
     } else {
       const hexInput = root.querySelector<HTMLInputElement>("[data-hex]")!;
-      const pick = root.querySelector<HTMLInputElement>("[data-pick]")!;
-      const sync = () => {
+      const pick = root.querySelector<HTMLButtonElement>("[data-pick]")!;
+      const picker = attachColorPicker({
+        trigger: pick,
+        value: "#6d5dfc",
+        onInput: (h) => {
+          hexInput.value = h.toUpperCase();
+          const rgb = parseColor(h);
+          if (rgb) paint(rgb);
+        },
+      });
+      hexInput.addEventListener("input", () => {
         const rgb = parseColor(hexInput.value);
         const wrap = hexInput.closest(".cc-colorinput");
         if (rgb) {
           wrap?.removeAttribute("data-invalid");
-          pick.value = rgbToHex(rgb);
+          picker.setValue(rgbToHex(rgb));
           paint(rgb);
         } else {
           wrap?.setAttribute("data-invalid", "");
         }
-      };
-      hexInput.addEventListener("input", sync);
-      pick.addEventListener("input", () => {
-        hexInput.value = pick.value.toUpperCase();
-        sync();
       });
-      sync();
+      // Initial render from the default value.
+      const initial = parseColor(hexInput.value);
+      if (initial) paint(initial);
     }
   }
 </script>
