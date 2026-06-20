@@ -1,0 +1,71 @@
+---
+import Container from "../common/Container.astro";
+import Button from "../common/Button.astro";
+---
+
+<section class="cc-section">
+  <Container>
+    <div class="cta">
+      <div class="cta__glow" aria-hidden="true"></div>
+      <div class="cta__inner">
+        <h2 class="cta__title">Start working with color the easy way</h2>
+        <p class="cta__text">
+          Compare colors, build palettes, and check accessibility in seconds —
+          free, in your browser, with nothing to install.
+        </p>
+        <div class="cta__actions">
+          <Button href="/tools/color-compare/" size="lg">Open Color Compare</Button>
+          <Button href="/tools/" variant="ghost" size="lg">See all tools</Button>
+        </div>
+      </div>
+    </div>
+  </Container>
+</section>
+
+<style>
+  .cta {
+    position: relative;
+    border-radius: var(--cc-radius-xl);
+    background: linear-gradient(130deg, #15103a 0%, #2a1b6b 45%, #4c1d95 100%);
+    color: #fff;
+    overflow: hidden;
+    box-shadow: var(--cc-shadow-card);
+  }
+  .cta__glow {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(255, 79, 163, 0.35), transparent 45%),
+      radial-gradient(circle at 85% 90%, rgba(22, 200, 243, 0.32), transparent 45%);
+  }
+  .cta__inner {
+    position: relative;
+    padding: clamp(2.5rem, 6vw, 4rem) clamp(1.5rem, 5vw, 4rem);
+    text-align: center;
+  }
+  .cta__title {
+    font-size: clamp(1.7rem, 4.5vw, 2.6rem);
+    color: #fff;
+  }
+  .cta__text {
+    margin: 1rem auto 0;
+    max-width: 34rem;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 1.05rem;
+  }
+  .cta__actions {
+    margin-top: 1.8rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+  }
+  /* Make the ghost button readable on dark bg */
+  .cta__actions :global(.cc-btn--ghost) {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  .cta__actions :global(.cc-btn--ghost:hover) {
+    background: rgba(255, 255, 255, 0.12);
+  }
+</style>

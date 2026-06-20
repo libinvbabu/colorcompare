@@ -1,0 +1,331 @@
+/* Shared interactive-tool UI primitives. Loaded only on pages using ToolShell. */
+
+.cc-tool {
+  background: var(--cc-surface);
+  border: 1px solid var(--cc-border);
+  border-radius: var(--cc-radius-lg);
+  box-shadow: var(--cc-shadow-card);
+  padding: clamp(1.1rem, 3vw, 1.75rem);
+}
+
+.cc-tool__controls {
+  display: grid;
+  gap: 1rem;
+}
+
+.cc-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.cc-field__label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--cc-text);
+}
+.cc-field__hint {
+  font-size: 0.78rem;
+  color: var(--cc-faint);
+}
+
+/* color input: native swatch picker + hex text field */
+.cc-colorinput {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--cc-surface-soft);
+  border: 1px solid var(--cc-border);
+  border-radius: var(--cc-radius-md);
+  padding: 0.35rem 0.5rem 0.35rem 0.4rem;
+}
+.cc-colorinput input[type="color"] {
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+  background: none;
+  cursor: pointer;
+}
+.cc-colorinput input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+.cc-colorinput input[type="color"]::-webkit-color-swatch { border: none; border-radius: 10px; }
+.cc-colorinput input[type="color"]::-moz-color-swatch { border: none; border-radius: 10px; }
+.cc-colorinput input[type="text"] {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  font-family: var(--cc-font-mono);
+  font-size: 1rem;
+  text-transform: uppercase;
+  color: var(--cc-text);
+  letter-spacing: 0.02em;
+}
+.cc-colorinput input[type="text"]:focus { outline: none; }
+.cc-colorinput[data-invalid] {
+  border-color: var(--cc-danger);
+}
+
+/* Swatch button that opens the custom color picker (replaces native input). */
+.cc-swatch-btn {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  border: 1px solid var(--cc-border);
+  cursor: pointer;
+  padding: 0;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.55);
+  transition: transform 0.12s ease;
+}
+.cc-swatch-btn:hover { transform: scale(1.05); }
+
+/* Custom color picker popover (appended to <body>). */
+.ccp {
+  position: fixed;
+  z-index: 90;
+  width: 256px;
+  padding: 12px;
+  background: var(--cc-surface);
+  border: 1px solid var(--cc-border);
+  border-radius: var(--cc-radius-md);
+  box-shadow: var(--cc-shadow-hover);
+  display: grid;
+  /* minmax(0,1fr) stops native inputs' intrinsic width from blowing out
+     the single column and overflowing the popover. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+}
+.ccp[hidden] { display: none; }
+.ccp__sv {
+  position: relative;
+  width: 100%;
+  height: 160px;
+  border-radius: var(--cc-radius-sm);
+  cursor: crosshair;
+  touch-action: none;
+  background:
+    linear-gradient(to top, #000, transparent),
+    linear-gradient(to right, #fff, hsl(var(--hue, 260) 100% 50%));
+}
+.ccp__sv-thumb {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.ccp__row { display: flex; align-items: center; gap: 8px; }
+.ccp__eye {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  border: 1px solid var(--cc-border);
+  background: var(--cc-surface-soft);
+  color: var(--cc-muted);
+  cursor: pointer;
+}
+.ccp__eye:hover { color: var(--cc-primary-dark); border-color: var(--cc-primary); }
+.ccp__hue {
+  flex: 1;
+  min-width: 0;
+  height: 14px;
+  border-radius: 999px;
+  appearance: none;
+  -webkit-appearance: none;
+  background: linear-gradient(to right, #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%);
+  cursor: pointer;
+}
+.ccp__hue::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+}
+.ccp__hue::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+}
+.ccp__foot { display: flex; align-items: center; gap: 8px; }
+.ccp__preview {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  border: 1px solid var(--cc-border);
+}
+.ccp__hex {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--cc-border);
+  border-radius: 8px;
+  padding: 0.5rem 0.6rem;
+  background: var(--cc-surface-soft);
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  color: var(--cc-text);
+}
+.ccp__hex:focus { outline: none; border-color: var(--cc-primary); }
+
+/* generic text/number input */
+.cc-input,
+.cc-select {
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--cc-border);
+  border-radius: var(--cc-radius-md);
+  background: var(--cc-surface-soft);
+  font-size: 1rem;
+  color: var(--cc-text);
+  font-family: inherit;
+}
+.cc-input:focus,
+.cc-select:focus {
+  outline: none;
+  border-color: var(--cc-primary);
+  box-shadow: 0 0 0 3px var(--cc-primary-soft);
+}
+
+/* segmented control */
+.cc-seg {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  background: var(--cc-surface-soft);
+  padding: 0.3rem;
+  border-radius: var(--cc-radius-pill);
+  border: 1px solid var(--cc-border);
+}
+.cc-seg button {
+  border: none;
+  background: transparent;
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--cc-radius-pill);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--cc-muted);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.cc-seg button[aria-pressed="true"] {
+  background: var(--cc-surface);
+  color: var(--cc-primary-dark);
+  box-shadow: var(--cc-shadow-soft);
+}
+
+/* value rows with copy */
+.cc-values {
+  display: grid;
+  gap: 0.5rem;
+}
+.cc-value {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.6rem 0.8rem;
+  background: var(--cc-surface-soft);
+  border: 1px solid var(--cc-border);
+  border-radius: var(--cc-radius-md);
+}
+.cc-value__label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--cc-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.cc-value__val {
+  flex: 1;
+  text-align: right;
+  font-family: var(--cc-font-mono);
+  font-size: 0.95rem;
+  color: var(--cc-text);
+  overflow-wrap: anywhere;
+}
+.cc-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: 1px solid var(--cc-border);
+  background: var(--cc-surface);
+  color: var(--cc-muted);
+  border-radius: var(--cc-radius-sm);
+  padding: 0.35rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+  white-space: nowrap;
+}
+.cc-copy:hover {
+  color: var(--cc-primary-dark);
+  border-color: var(--cc-primary);
+}
+.cc-copy[data-copied] {
+  color: var(--cc-success);
+  border-color: var(--cc-success);
+}
+
+/* big swatch */
+.cc-swatch {
+  border-radius: var(--cc-radius-md);
+  border: 1px solid var(--cc-border);
+  min-height: 90px;
+  display: grid;
+  place-items: center;
+  font-family: var(--cc-font-mono);
+  font-weight: 700;
+}
+
+/* pass/fail pill */
+.cc-judge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.35rem 0.7rem;
+  border-radius: var(--cc-radius-pill);
+}
+.cc-judge--pass { background: rgba(34, 197, 94, 0.16); color: #15803d; }
+.cc-judge--fail { background: rgba(220, 38, 38, 0.14); color: #b91c1c; }
+.cc-judge--warn { background: rgba(217, 119, 6, 0.16); color: #b45309; }
+
+/* swatch grid for palettes / scales */
+.cc-palette {
+  display: grid;
+  gap: 0.5rem;
+}
+.cc-palette__chip {
+  border: 1px solid var(--cc-border);
+  border-radius: var(--cc-radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--cc-surface);
+  text-align: left;
+  padding: 0;
+}
+.cc-palette__color {
+  height: 64px;
+}
+.cc-palette__hex {
+  display: block;
+  padding: 0.45rem 0.55rem;
+  font-family: var(--cc-font-mono);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}

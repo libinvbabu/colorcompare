@@ -1,0 +1,67 @@
+---
+title: "How to Choose Accessible UI Colors"
+description: "A practical guide to accessible color in UI design — WCAG contrast ratios, designing beyond color alone, and testing for color blindness."
+pubDate: 2026-02-20
+author: "ColorCompare Team"
+tags: ["accessibility", "ui design", "wcag"]
+seoTitle: "How to Choose Accessible UI Colors — A Practical Guide"
+seoDescription: "Learn how to choose accessible UI colors: meet WCAG contrast ratios, avoid relying on color alone, and test designs for color blindness."
+cover: ["#22c55e", "#16c8f3"]
+---
+
+Accessible color isn’t a constraint on good design — it’s part of it. When your colors are accessible, your product works for more people, reads better on cheap screens and in bright sunlight, and avoids legal risk. Here’s how to get it right without slowing down.
+
+## Understand WCAG contrast ratios
+
+The Web Content Accessibility Guidelines (WCAG) define minimum **contrast ratios** between text and its background:
+
+- **AA — normal text:** at least **4.5:1**
+- **AA — large text** (24px, or 18.66px bold): at least **3:1**
+- **AAA — normal text:** at least **7:1**
+- **Interactive elements & meaningful icons:** at least **3:1**
+
+Ratios run from 1:1 (identical) to 21:1 (black on white). You can measure any pair instantly with the [Contrast Checker](/tools/contrast-checker/).
+
+## Don’t rely on color alone
+
+Roughly 1 in 12 men have some form of color vision deficiency. If your only signal that something is an error is that it’s red, those users may miss it entirely.
+
+The fix is simple: **pair color with a second cue**.
+
+- Add an icon (✓, ✕, ⚠) alongside status colors.
+- Add a text label like “Error” or “Success”.
+- Use shape, position, or underlines for links — not just color.
+
+Preview how your palette holds up with the [Color Blindness Simulator](/tools/color-blindness-simulator/). If two states collapse into the same color, add another cue.
+
+## Choosing accessible text colors
+
+A few reliable habits:
+
+- Use a near-black like `#111827` rather than pure black `#000000` — it’s slightly softer while still passing AAA on white.
+- For secondary/muted text, verify it *still* passes 4.5:1; muted grays often fail.
+- On colored backgrounds, let the [Contrast Checker](/tools/contrast-checker/) pick whether black or white text wins.
+
+The [UI color inspiration](/colors/ui-color-inspiration/) collection lists palettes by role — background, surface, text, muted, accent — already tuned for readable combinations.
+
+## Accessible accent and brand colors
+
+Brand colors aren’t always contrast-friendly, especially bright or pastel ones. You don’t have to abandon them:
+
+1. Use the brand color for large, non-text elements where contrast rules are looser.
+2. Generate a darker shade for text and small UI with the [Shades & Tints Generator](/tools/shades-and-tints-generator/).
+3. Keep the original brand color for fills, and use the darker step for labels on top.
+
+## Focus states matter too
+
+Keyboard users rely on a visible focus indicator. Make sure focus outlines have at least 3:1 contrast against the background, and never remove them without providing a clear alternative.
+
+## A quick accessibility checklist
+
+- Body text meets 4.5:1; large text meets 3:1.
+- Status and meaning never depend on color alone.
+- Interactive elements and focus states meet 3:1.
+- The palette survives the [Color Blindness Simulator](/tools/color-blindness-simulator/).
+- Muted and secondary text was actually tested, not assumed.
+
+Accessibility checks take seconds once they’re part of your workflow — and they make your design better for everyone, not just users with disabilities.

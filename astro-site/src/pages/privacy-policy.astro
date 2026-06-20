@@ -1,0 +1,113 @@
+---
+import BaseLayout from "../components/layout/BaseLayout.astro";
+import Container from "../components/common/Container.astro";
+import Breadcrumbs from "../components/common/Breadcrumbs.astro";
+import { breadcrumbSchema } from "../utils/schema";
+
+const title = "Privacy Policy";
+const description =
+  "How ColorCompare handles data, advertising cookies, analytics, and browser-only image processing.";
+const updated = "June 19, 2026";
+const schemas = [
+  breadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Privacy Policy", path: "/privacy-policy/" },
+  ]),
+];
+---
+
+<BaseLayout title={title} description={description} canonical="/privacy-policy/" schemas={schemas}>
+  <Breadcrumbs crumbs={[{ name: "Home", path: "/" }, { name: "Privacy Policy", path: "/privacy-policy/" }]} />
+  <Container width="narrow">
+    <div class="cc-prose static-page">
+      <h1>Privacy Policy</h1>
+      <p class="static-page__updated">Last updated: {updated}</p>
+
+      <p>
+        This Privacy Policy explains how ColorCompare (“we”, “us”) handles
+        information when you use our website and tools at colorcompare.in. We aim
+        to collect as little data as possible and to be transparent about the
+        third-party services we rely on.
+      </p>
+
+      <h2>Information we collect</h2>
+      <p>
+        ColorCompare does not require an account, and we do not ask you to submit
+        personal information to use our tools. We do not operate a database of
+        user accounts. Limited information may be collected automatically by the
+        third-party services described below.
+      </p>
+
+      <h2>Advertising and cookies</h2>
+      <p>
+        We use Google AdSense to display advertising, which helps us keep
+        ColorCompare free. Third-party vendors, including Google, use cookies to
+        serve ads based on your prior visits to this and other websites.
+      </p>
+      <ul>
+        <li>
+          Google’s use of advertising cookies enables it and its partners to
+          serve ads to you based on your visits to our site and/or other sites on
+          the internet.
+        </li>
+        <li>
+          You can opt out of personalized advertising by visiting
+          <a href="https://www.google.com/settings/ads" rel="noopener nofollow" target="_blank">Google Ads Settings</a>.
+        </li>
+        <li>
+          You can also opt out of some third-party vendors’ use of cookies for
+          personalized advertising at
+          <a href="https://www.aboutads.info/choices/" rel="noopener nofollow" target="_blank">aboutads.info/choices</a>.
+        </li>
+      </ul>
+
+      <h2>Analytics</h2>
+      <p>
+        We may use privacy-friendly analytics to understand aggregate, anonymous
+        usage — such as which pages and tools are most popular — so we can
+        improve the site. This data is not used to identify individual users.
+      </p>
+
+      <h2>Browser-only image processing</h2>
+      <p>
+        Our <a href="/tools/image-color-picker/">Image Color Picker</a> processes
+        images entirely within your browser using the HTML canvas API. Images you
+        select are <strong>never uploaded to our servers</strong> and never leave
+        your device. They are only used locally to extract colors and are
+        discarded when you leave or refresh the page.
+      </p>
+
+      <h2>Local processing of tool inputs</h2>
+      <p>
+        Colors, palettes, and other values you enter into our tools are processed
+        in your browser to produce results. We do not transmit or store these
+        inputs on our servers.
+      </p>
+
+      <h2>Children’s privacy</h2>
+      <p>
+        ColorCompare is a general-audience design utility and is not directed at
+        children under 13. We do not knowingly collect personal information from
+        children.
+      </p>
+
+      <h2>Changes to this policy</h2>
+      <p>
+        We may update this Privacy Policy from time to time. Material changes will
+        be reflected by updating the “Last updated” date above.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        Questions about this policy? Reach us through our
+        <a href="/contact/">contact page</a>.
+      </p>
+    </div>
+  </Container>
+</BaseLayout>
+
+<style>
+  .static-page { margin: 1.5rem 0 1rem; }
+  .static-page h1 { font-size: clamp(2rem, 5.5vw, 3rem); }
+  .static-page__updated { color: var(--cc-faint); font-size: 0.9rem; }
+</style>

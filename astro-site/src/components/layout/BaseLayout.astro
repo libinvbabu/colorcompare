@@ -1,0 +1,79 @@
+---
+import "../../styles/global.css";
+import SeoHead from "./SeoHead.astro";
+import Header from "./Header.astro";
+import Footer from "./Footer.astro";
+import AutoAdsScript from "../ads/AutoAdsScript.astro";
+import { websiteSchema, organizationSchema } from "../../utils/schema";
+
+interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  ogImage?: string;
+  ogType?: "website" | "article";
+  noindex?: boolean;
+  schemas?: Record<string, unknown>[];
+  /** Add base site-wide WebSite + Organization schema (homepage). */
+  rootSchema?: boolean;
+}
+
+const {
+  title,
+  description,
+  canonical,
+  ogImage,
+  ogType = "website",
+  noindex = false,
+  schemas = [],
+  rootSchema = false,
+} = Astro.props;
+
+const allSchemas = rootSchema
+  ? [websiteSchema(), organizationSchema(), ...schemas]
+  : schemas;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <SeoHead
+      title={title}
+      description={description}
+      canonical={canonical}
+      ogImage={ogImage}
+      ogType={ogType}
+      noindex={noindex}
+      schemas={allSchemas}
+    />
+    <AutoAdsScript />
+  </head>
+  <body>
+    <a href="#main" class="cc-skip">Skip to content</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+
+    <style>
+      .cc-skip {
+        position: absolute;
+        left: -9999px;
+        top: 0;
+        z-index: 100;
+        padding: 0.75rem 1rem;
+        background: var(--cc-primary);
+        color: #fff;
+        border-radius: 0 0 8px 0;
+        font-weight: 600;
+      }
+      .cc-skip:focus {
+        left: 0;
+      }
+      main {
+        display: block;
+      }
+    </style>
+  </body>
+</html>

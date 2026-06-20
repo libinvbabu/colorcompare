@@ -1,0 +1,129 @@
+---
+import Container from "../components/common/Container.astro";
+import Breadcrumbs from "../components/common/Breadcrumbs.astro";
+import AdSlot from "../components/ads/AdSlot.astro";
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  post: CollectionEntry<"blog">;
+  headings: { depth: number; slug: string; text: string }[];
+  readingTime: number;
+}
+const { post, headings, readingTime } = Astro.props;
+const { data } = post;
+const toc = headings.filter((h) => h.depth === 2);
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+---
+
+<Breadcrumbs
+  crumbs={[
+    { name: "Home", path: "/" },
+    { name: "Blog", path: "/blog/" },
+    { name: data.title, path: `/blog/${post.id}/` },
+  ]}
+/>
+
+<article class="post">
+  <header
+    class="post__cover"
+    style={`background:linear-gradient(135deg, ${data.cover[0]}, ${data.cover[1]})`}
+  >
+    <Container width="narrow">
+      <div class="post__cover-inner">
+        <div class="post__tags">
+          {data.tags.slice(0, 3).map((t) => <span class="post__tag">{t}</span>)}
+        </div>
+        <h1 class="post__title">{data.title}</h1>
+        <p class="post__meta">
+          By {data.author} · {fmt(data.pubDate)} · {readingTime} min read
+        </p>
+      </div>
+    </Container>
+  </header>
+
+  <Container width="narrow">
+    <p class="post__lede">{data.description}</p>
+
+    {
+      toc.length > 2 && (
+        <nav class="post__toc" aria-label="Table of contents">
+          <p class="post__toc-title">On this page</p>
+          <ol>
+            {toc.map((h) => (
+              <li><a href={`#${h.slug}`}>{h.text}</a></li>
+            ))}
+          </ol>
+        </nav>
+      )
+    }
+
+    <div class="cc-prose post__body">
+      <slot />
+    </div>
+
+    <AdSlot slot="" format="horizontal" />
+
+    <div class="post__back">
+      <a href="/blog/">← Back to all articles</a>
+    </div>
+  </Container>
+</article>
+
+<style>
+  .post__cover {
+    padding: clamp(2.5rem, 7vw, 4.5rem) 0;
+    color: #fff;
+    margin-bottom: 2.5rem;
+  }
+  .post__tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
+  .post__tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.3rem 0.65rem;
+    border-radius: var(--cc-radius-pill);
+  }
+  .post__title {
+    font-size: clamp(2rem, 5.5vw, 3.1rem);
+    color: #fff;
+    text-shadow: 0 2px 24px rgba(0, 0, 0, 0.2);
+  }
+  .post__meta { margin-top: 1rem; color: rgba(255, 255, 255, 0.9); font-size: 0.95rem; }
+  .post__lede {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    color: var(--cc-text);
+    font-weight: 500;
+    margin-bottom: 2rem;
+  }
+  .post__toc {
+    background: var(--cc-surface-soft);
+    border: 1px solid var(--cc-border);
+    border-radius: var(--cc-radius-md);
+    padding: 1.1rem 1.3rem;
+    margin-bottom: 2rem;
+  }
+  .post__toc-title {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--cc-faint);
+    font-weight: 700;
+    margin-bottom: 0.6rem;
+  }
+  .post__toc ol {
+    margin: 0;
+    padding-left: 1.1rem;
+    display: grid;
+    gap: 0.4rem;
+  }
+  .post__toc a { color: var(--cc-primary-dark); font-size: 0.95rem; }
+  .post__toc a:hover { text-decoration: underline; }
+  .post__back { margin-top: 2rem; }
+  .post__back a { color: var(--cc-primary-dark); font-weight: 600; }
+  .post__back a:hover { text-decoration: underline; }
+</style>

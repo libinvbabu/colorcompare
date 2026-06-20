@@ -1,0 +1,185 @@
+---
+// Contrast Checker — WCAG ratio + AA/AAA pass-fail for normal and large text.
+---
+
+<div class="cc-tool" data-contrast-tool>
+  <div class="ct__controls">
+    <div class="cc-field">
+      <label class="cc-field__label" for="ct-fg">Text color (foreground)</label>
+      <div class="cc-colorinput">
+        <button type="button" class="cc-swatch-btn" aria-label="Pick text color" data-fg-pick></button>
+        <input type="text" id="ct-fg" value="#111827" aria-label="Text color hex" data-fg />
+      </div>
+    </div>
+    <div class="cc-field">
+      <label class="cc-field__label" for="ct-bg">Background color</label>
+      <div class="cc-colorinput">
+        <button type="button" class="cc-swatch-btn" aria-label="Pick background color" data-bg-pick></button>
+        <input type="text" id="ct-bg" value="#ffffff" aria-label="Background color hex" data-bg />
+      </div>
+    </div>
+    <button type="button" class="cc-copy ct__swap" data-swap>⇅ Swap colors</button>
+  </div>
+
+  <div class="ct__result">
+    <div class="ct__ratio">
+      <span class="ct__ratio-label">Contrast ratio</span>
+      <strong class="cc-mono" data-ratio>—</strong>
+    </div>
+    <div class="ct__grid" role="table" aria-label="WCAG results">
+      <div class="ct__cell" role="row"><span>AA · Normal text</span><span class="cc-judge" data-aa-normal></span></div>
+      <div class="ct__cell" role="row"><span>AA · Large text</span><span class="cc-judge" data-aa-large></span></div>
+      <div class="ct__cell" role="row"><span>AAA · Normal text</span><span class="cc-judge" data-aaa-normal></span></div>
+      <div class="ct__cell" role="row"><span>AAA · Large text</span><span class="cc-judge" data-aaa-large></span></div>
+    </div>
+  </div>
+
+  <div class="ct__preview" data-preview>
+    <p class="ct__preview-lg">Large heading preview</p>
+    <p class="ct__preview-sm">
+      This is a preview of normal body text rendered with your chosen colors.
+      Readable contrast keeps content comfortable for everyone.
+    </p>
+  </div>
+</div>
+
+<style>
+  .ct__controls {
+    display: grid;
+    gap: 1rem;
+    align-items: end;
+  }
+  .ct__swap {
+    justify-self: start;
+  }
+  .ct__result {
+    margin-top: 1.5rem;
+    display: grid;
+    gap: 1rem;
+  }
+  .ct__ratio {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    background: var(--cc-surface-soft);
+    border: 1px solid var(--cc-border);
+    border-radius: var(--cc-radius-md);
+  }
+  .ct__ratio-label { color: var(--cc-muted); font-size: 0.9rem; }
+  .ct__ratio strong { font-size: 2rem; }
+  .ct__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  .ct__cell {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--cc-border);
+    border-radius: var(--cc-radius-md);
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  .ct__preview {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    border-radius: var(--cc-radius-md);
+    border: 1px solid var(--cc-border);
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .ct__preview-lg { font-size: 1.6rem; font-weight: 800; }
+  .ct__preview-sm { margin-top: 0.5rem; font-size: 1rem; }
+
+  @media (min-width: 680px) {
+    .ct__controls { grid-template-columns: 1fr 1fr auto; }
+    .ct__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+
+<script>
+  import { parseColor, evaluateWcag, rgbToHex } from "../../utils/color";
+  import { attachColorPicker } from "../../scripts/colorPicker";
+
+  const root = document.querySelector<HTMLElement>("[data-contrast-tool]");
+  if (root) {
+    const fg = root.querySelector<HTMLInputElement>("[data-fg]")!;
+    const bg = root.querySelector<HTMLInputElement>("[data-bg]")!;
+    const fgPick = root.querySelector<HTMLButtonElement>("[data-fg-pick]")!;
+    const bgPick = root.querySelector<HTMLButtonElement>("[data-bg-pick]")!;
+    const ratioEl = root.querySelector<HTMLElement>("[data-ratio]")!;
+    const preview = root.querySelector<HTMLElement>("[data-preview]")!;
+    const cells = {
+      aaN: root.querySelector<HTMLElement>("[data-aa-normal]")!,
+      aaL: root.querySelector<HTMLElement>("[data-aa-large]")!,
+      aaaN: root.querySelector<HTMLElement>("[data-aaa-normal]")!,
+      aaaL: root.querySelector<HTMLElement>("[data-aaa-large]")!,
+    };
+
+    function judge(el: HTMLElement, pass: boolean) {
+      el.textContent = pass ? "Pass" : "Fail";
+      el.className = `cc-judge ${pass ? "cc-judge--pass" : "cc-judge--fail"}`;
+    }
+
+    function update() {
+      const fgRgb = parseColor(fg.value);
+      const bgRgb = parseColor(bg.value);
+      if (!fgRgb || !bgRgb) return;
+      const res = evaluateWcag(fgRgb, bgRgb);
+      ratioEl.textContent = res.ratioLabel;
+      judge(cells.aaN, res.aaNormal);
+      judge(cells.aaL, res.aaLarge);
+      judge(cells.aaaN, res.aaaNormal);
+      judge(cells.aaaL, res.aaaLarge);
+      preview.style.background = bg.value;
+      preview.style.color = fg.value;
+    }
+
+    const fgPicker = attachColorPicker({
+      trigger: fgPick,
+      value: "#111827",
+      onInput: (hex) => {
+        fg.value = hex.toUpperCase();
+        update();
+      },
+    });
+    const bgPicker = attachColorPicker({
+      trigger: bgPick,
+      value: "#ffffff",
+      onInput: (hex) => {
+        bg.value = hex.toUpperCase();
+        update();
+      },
+    });
+
+    function bindText(input: HTMLInputElement, picker: { setValue(h: string): void }) {
+      input.addEventListener("input", () => {
+        const wrap = input.closest(".cc-colorinput");
+        const rgb = parseColor(input.value);
+        if (rgb) {
+          wrap?.removeAttribute("data-invalid");
+          picker.setValue(rgbToHex(rgb));
+          update();
+        } else {
+          wrap?.setAttribute("data-invalid", "");
+        }
+      });
+    }
+    bindText(fg, fgPicker);
+    bindText(bg, bgPicker);
+
+    root.querySelector<HTMLButtonElement>("[data-swap]")!.addEventListener("click", () => {
+      const f = fg.value;
+      fg.value = bg.value;
+      bg.value = f;
+      fgPicker.setValue(parseColor(fg.value) ? rgbToHex(parseColor(fg.value)!) : "#000000");
+      bgPicker.setValue(parseColor(bg.value) ? rgbToHex(parseColor(bg.value)!) : "#ffffff");
+      update();
+    });
+
+    update();
+  }
+</script>

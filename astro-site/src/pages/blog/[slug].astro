@@ -1,0 +1,51 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../components/layout/BaseLayout.astro";
+import BlogLayout from "../../layouts/BlogLayout.astro";
+import { articleSchema, breadcrumbSchema } from "../../utils/schema";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+
+// Reading time from rendered word count (remark injects nothing by default,
+// so estimate from the raw body length).
+const words = post.body?.split(/\s+/).length ?? 0;
+const readingTime = Math.max(1, Math.round(words / 200));
+
+const path = `/blog/${post.id}/`;
+const schemas = [
+  articleSchema({
+    title: post.data.title,
+    description: post.data.seoDescription,
+    path,
+    datePublished: post.data.pubDate.toISOString(),
+    dateModified: post.data.updatedDate?.toISOString(),
+    author: post.data.author,
+  }),
+  breadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Blog", path: "/blog/" },
+    { name: post.data.title, path },
+  ]),
+];
+---
+
+<BaseLayout
+  title={post.data.seoTitle}
+  description={post.data.seoDescription}
+  canonical={path}
+  ogType="article"
+  schemas={schemas}
+>
+  <BlogLayout post={post} headings={headings} readingTime={readingTime}>
+    <Content />
+  </BlogLayout>
+</BaseLayout>

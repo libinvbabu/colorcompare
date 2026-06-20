@@ -1,0 +1,15 @@
+---
+const enabled = import.meta.env.PUBLIC_ADSENSE_ENABLED === "true";
+const clientId = import.meta.env.PUBLIC_ADSENSE_CLIENT_ID;
+---
+
+{
+  enabled && clientId && (
+    <script
+      is:inline
+      async
+      src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${clientId}`}
+      crossorigin="anonymous"
+    />
+  )
+}

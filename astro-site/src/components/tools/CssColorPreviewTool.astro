@@ -1,0 +1,96 @@
+---
+// CSS Color Preview — render any CSS color string and show normalized values.
+const examples = ["rebeccapurple", "#16c8f3", "rgb(255, 79, 163)", "hsl(150, 70%, 45%)", "tomato"];
+---
+
+<div class="cc-tool" data-csspreview>
+  <div class="cc-field">
+    <label class="cc-field__label" for="cp-input">CSS color value</label>
+    <input class="cc-input cc-mono" id="cp-input" value="rebeccapurple" placeholder="e.g. tomato, #ff6347, rgb(255,99,71)" data-input autocomplete="off" spellcheck="false" />
+    <p class="cc-field__hint" data-status></p>
+  </div>
+
+  <div class="cp__examples">
+    {examples.map((ex) => <button type="button" class="cp__chip" data-ex={ex}>{ex}</button>)}
+  </div>
+
+  <div class="cp__preview cc-swatch" data-preview></div>
+
+  <div class="cc-values" data-values></div>
+</div>
+
+<style>
+  .cp__examples { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 1rem 0; }
+  .cp__chip {
+    border: 1px solid var(--cc-border); background: var(--cc-surface-soft);
+    border-radius: var(--cc-radius-pill); padding: 0.35rem 0.75rem;
+    font-size: 0.8rem; font-family: var(--cc-font-mono); cursor: pointer; color: var(--cc-muted);
+  }
+  .cp__chip:hover { color: var(--cc-primary-dark); border-color: var(--cc-primary); }
+  .cp__preview { min-height: 120px; margin-bottom: 1.25rem; font-size: 1.1rem; }
+</style>
+
+<script>
+  import {
+    parseColor,
+    rgbToHex,
+    rgbToHsl,
+    formatRgb,
+    formatHsl,
+    readableTextColor,
+  } from "../../utils/color";
+  import { copyText, flashCopied } from "../../scripts/clipboard";
+
+  const root = document.querySelector<HTMLElement>("[data-csspreview]");
+  if (root) {
+    const input = root.querySelector<HTMLInputElement>("[data-input]")!;
+    const preview = root.querySelector<HTMLElement>("[data-preview]")!;
+    const values = root.querySelector<HTMLElement>("[data-values]")!;
+    const status = root.querySelector<HTMLElement>("[data-status]")!;
+
+    function update() {
+      const rgb = parseColor(input.value.trim());
+      if (!rgb) {
+        status.textContent = "Not a recognized CSS color. Try a name, HEX, rgb() or hsl() value.";
+        status.style.color = "var(--cc-danger)";
+        preview.style.background = "var(--cc-surface-soft)";
+        preview.style.color = "var(--cc-faint)";
+        preview.textContent = "—";
+        values.innerHTML = "";
+        return;
+      }
+      status.textContent = "Valid color ✓";
+      status.style.color = "var(--cc-success)";
+      const hex = rgbToHex(rgb);
+      const hsl = rgbToHsl(rgb);
+      preview.style.background = hex;
+      preview.style.color = readableTextColor(rgb);
+      preview.textContent = hex.toUpperCase();
+      const rows: [string, string][] = [
+        ["HEX", hex.toUpperCase()],
+        ["RGB", formatRgb(rgb)],
+        ["HSL", formatHsl(hsl)],
+      ];
+      values.innerHTML = rows
+        .map(
+          ([l, v]) =>
+            `<div class="cc-value"><span class="cc-value__label">${l}</span><span class="cc-value__val">${v}</span><button class="cc-copy" data-copy="${v}">Copy</button></div>`
+        )
+        .join("");
+      values.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          if (await copyText(btn.dataset.copy!)) flashCopied(btn);
+        });
+      });
+    }
+
+    input.addEventListener("input", update);
+    root.querySelectorAll<HTMLButtonElement>("[data-ex]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        input.value = btn.dataset.ex!;
+        update();
+      });
+    });
+    update();
+  }
+</script>

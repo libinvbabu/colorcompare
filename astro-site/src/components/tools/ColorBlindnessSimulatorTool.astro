@@ -1,0 +1,143 @@
+---
+// Color Blindness Simulator — preview a palette across common CVD types.
+---
+
+<div class="cc-tool" data-cvd>
+  <div class="cvd__inputs">
+    <span class="cc-field__label">Your colors</span>
+    <div class="cvd__stops" data-stops></div>
+    <button type="button" class="cc-copy cvd__add" data-add>+ Add color</button>
+  </div>
+
+  <div class="cvd__rows" data-rows></div>
+
+  <p class="cvd__note">
+    These simulations use standard mathematical approximations of color vision
+    deficiencies. Real perception varies between individuals — treat this as a
+    helpful guide, not a precise medical model. Don’t rely on color alone to
+    convey meaning.
+  </p>
+</div>
+
+<style>
+  .cvd__inputs { margin-bottom: 1.5rem; }
+  .cvd__add { margin-top: 0.75rem; }
+  .cvd__note {
+    margin-top: 1.5rem;
+    font-size: 0.82rem;
+    color: var(--cc-muted);
+    background: var(--cc-surface-soft);
+    border: 1px solid var(--cc-border);
+    border-radius: var(--cc-radius-sm);
+    padding: 0.8rem 0.9rem;
+  }
+</style>
+
+<!-- Global: injected via innerHTML, so scoped styles wouldn't reach them. -->
+<style is:global>
+  [data-cvd] .cvd__stops { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+  [data-cvd] .cvd__stop { position: relative; }
+  [data-cvd] .cvd__stop .cc-swatch-btn { width: 46px; height: 46px; border-radius: 12px; }
+  [data-cvd] .cvd__stop-remove {
+    position: absolute; top: -7px; right: -7px; width: 20px; height: 20px;
+    border-radius: 50%; border: 2px solid var(--cc-surface); background: var(--cc-text);
+    color: #fff; font-size: 0.65rem; cursor: pointer; display: grid; place-items: center; padding: 0;
+  }
+  [data-cvd] .cvd__rows { display: grid; gap: 0.75rem; }
+  [data-cvd] .cvd__row {
+    display: grid;
+    gap: 0.85rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--cc-border);
+    border-radius: var(--cc-radius-md);
+    background: var(--cc-surface);
+    box-shadow: var(--cc-shadow-soft);
+  }
+  [data-cvd] .cvd__row-label { font-size: 0.92rem; font-weight: 700; color: var(--cc-text); }
+  [data-cvd] .cvd__row-label small { display: block; font-weight: 500; color: var(--cc-faint); font-size: 0.78rem; margin-top: 0.15rem; }
+  [data-cvd] .cvd__swatches { display: flex; gap: 0; border-radius: var(--cc-radius-sm); overflow: hidden; border: 1px solid var(--cc-border); }
+  [data-cvd] .cvd__swatches span { flex: 1; height: 52px; }
+  @media (min-width: 760px) {
+    [data-cvd] .cvd__row { grid-template-columns: 190px 1fr; align-items: center; }
+  }
+</style>
+
+<script>
+  import { hexToRgb, rgbToHex, simulateColorVision, type ColorVision } from "../../utils/color";
+  import { attachColorPicker } from "../../scripts/colorPicker";
+
+  const root = document.querySelector<HTMLElement>("[data-cvd]");
+  if (root) {
+    const stopsEl = root.querySelector<HTMLElement>("[data-stops]")!;
+    const rowsEl = root.querySelector<HTMLElement>("[data-rows]")!;
+    const addBtn = root.querySelector<HTMLButtonElement>("[data-add]")!;
+
+    let colors = ["#22c55e", "#dc2626", "#facc15", "#3b82f6"];
+
+    const modes: { id: ColorVision | "normal"; label: string; sub: string }[] = [
+      { id: "normal", label: "Normal vision", sub: "Typical color perception" },
+      { id: "protanopia", label: "Protanopia", sub: "Red-blind (~1% of men)" },
+      { id: "deuteranopia", label: "Deuteranopia", sub: "Green-blind (most common)" },
+      { id: "tritanopia", label: "Tritanopia", sub: "Blue-yellow (rare)" },
+      { id: "achromatopsia", label: "Achromatopsia", sub: "Total color blindness" },
+    ];
+
+    function renderStops() {
+      stopsEl.innerHTML = colors
+        .map(
+          (_, i) =>
+            `<span class="cvd__stop"><button type="button" class="cc-swatch-btn" aria-label="Color ${i + 1}" data-stop="${i}"></button>${colors.length > 2 ? `<button type="button" class="cvd__stop-remove" aria-label="Remove color" data-remove="${i}">✕</button>` : ""}</span>`
+        )
+        .join("");
+      stopsEl.querySelectorAll<HTMLButtonElement>("[data-stop]").forEach((btn) => {
+        const i = Number(btn.dataset.stop);
+        attachColorPicker({
+          trigger: btn,
+          value: colors[i],
+          onInput: (h) => {
+            colors[i] = h;
+            renderRows();
+          },
+        });
+      });
+      stopsEl.querySelectorAll<HTMLButtonElement>("[data-remove]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          colors.splice(Number(btn.dataset.remove), 1);
+          renderStops();
+          renderRows();
+        });
+      });
+      addBtn.disabled = colors.length >= 6;
+      addBtn.style.opacity = colors.length >= 6 ? "0.5" : "1";
+    }
+
+    function renderRows() {
+      rowsEl.innerHTML = modes
+        .map((m) => {
+          const swatches = colors
+            .map((c) => {
+              const rgb = hexToRgb(c)!;
+              const sim = m.id === "normal" ? rgb : simulateColorVision(rgb, m.id);
+              return `<span style="background:${rgbToHex(sim)}"></span>`;
+            })
+            .join("");
+          return `<div class="cvd__row">
+            <div class="cvd__row-label">${m.label}<small>${m.sub}</small></div>
+            <div class="cvd__swatches">${swatches}</div>
+          </div>`;
+        })
+        .join("");
+    }
+
+    addBtn.addEventListener("click", () => {
+      if (colors.length < 6) {
+        colors.push("#8b5cf6");
+        renderStops();
+        renderRows();
+      }
+    });
+
+    renderStops();
+    renderRows();
+  }
+</script>

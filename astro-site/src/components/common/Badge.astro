@@ -1,0 +1,53 @@
+---
+interface Props {
+  variant?: "neutral" | "primary" | "success" | "warning" | "danger";
+  class?: string;
+  icon?: string;
+}
+
+const { variant = "neutral", class: className = "", icon } = Astro.props;
+---
+
+<span class={`cc-badge cc-badge--${variant} ${className}`}>
+  {icon && <span class="cc-badge__icon" aria-hidden="true">{icon}</span>}
+  <slot />
+</span>
+
+<style>
+  .cc-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: var(--cc-radius-pill);
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1;
+    border: 1px solid var(--cc-border);
+    background: var(--cc-surface);
+    color: var(--cc-muted);
+  }
+  .cc-badge__icon {
+    font-size: 0.85rem;
+  }
+  .cc-badge--primary {
+    background: var(--cc-primary-soft);
+    color: var(--cc-primary-dark);
+    border-color: transparent;
+  }
+  .cc-badge--success {
+    background: rgba(34, 197, 94, 0.14);
+    color: #15803d;
+    border-color: transparent;
+  }
+  .cc-badge--warning {
+    background: rgba(217, 119, 6, 0.14);
+    color: #b45309;
+    border-color: transparent;
+  }
+  .cc-badge--danger {
+    background: rgba(220, 38, 38, 0.12);
+    color: #b91c1c;
+    border-color: transparent;
+  }
+</style>

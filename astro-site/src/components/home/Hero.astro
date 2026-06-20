@@ -1,0 +1,112 @@
+---
+import Button from "../common/Button.astro";
+import Container from "../common/Container.astro";
+import ProductPreview from "./ProductPreview.astro";
+
+const badges = ["Free tools", "Accessibility checks", "HEX · RGB · HSL · CMYK", "No signup"];
+---
+
+<section class="hero">
+  <Container>
+  <div class="hero__grid">
+    <div class="hero__copy">
+      <p class="hero__eyebrow">
+        <span class="hero__dot"></span> The color toolkit for makers
+      </p>
+      <h1 class="hero__title">
+        All-in-one <span class="cc-text-gradient">color tools</span> for designers &amp; developers
+      </h1>
+      <p class="hero__subtitle">
+        Compare colors side by side, generate palettes, check accessibility,
+        convert formats, and discover combinations for websites, brands, logos,
+        and creative projects.
+      </p>
+      <div class="hero__actions">
+        <Button href="/tools/color-compare/" size="lg">Start Comparing</Button>
+        <Button href="/tools/" variant="secondary" size="lg">Browse Tools</Button>
+      </div>
+      <ul class="hero__badges" aria-label="Highlights">
+        {badges.map((b) => <li class="hero__badge">{b}</li>)}
+      </ul>
+    </div>
+
+    <div class="hero__preview">
+      <ProductPreview />
+    </div>
+  </div>
+  </Container>
+</section>
+
+<style>
+  .hero {
+    padding-top: clamp(2.5rem, 6vw, 4.5rem);
+    padding-bottom: clamp(2.5rem, 6vw, 4rem);
+  }
+  .hero__grid {
+    display: grid;
+    gap: 2.5rem;
+    align-items: center;
+  }
+  .hero__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--cc-muted);
+    background: var(--cc-surface);
+    border: 1px solid var(--cc-border);
+    padding: 0.4rem 0.85rem;
+    border-radius: var(--cc-radius-pill);
+    box-shadow: var(--cc-shadow-soft);
+  }
+  .hero__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--cc-green);
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.18);
+  }
+  .hero__title {
+    margin-top: 1.2rem;
+    font-size: clamp(2.2rem, 6.5vw, 3.6rem);
+    font-weight: 800;
+    line-height: 1.05;
+  }
+  .hero__subtitle {
+    margin-top: 1.2rem;
+    font-size: clamp(1.02rem, 2.4vw, 1.2rem);
+    color: var(--cc-muted);
+    max-width: 34rem;
+  }
+  .hero__actions {
+    margin-top: 1.8rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+  .hero__badges {
+    margin-top: 1.8rem;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .hero__badge {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--cc-muted);
+    background: color-mix(in srgb, var(--cc-surface) 70%, transparent);
+    border: 1px solid var(--cc-border);
+    padding: 0.4rem 0.75rem;
+    border-radius: var(--cc-radius-pill);
+  }
+
+  @media (min-width: 980px) {
+    .hero__grid {
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 3.5rem;
+    }
+  }
+</style>

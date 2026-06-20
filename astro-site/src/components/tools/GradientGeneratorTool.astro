@@ -1,0 +1,252 @@
+---
+// Gradient Generator — visual, designer-friendly CSS gradient builder.
+const directions = [
+  { v: "315deg", l: "↖", aria: "Top left" },
+  { v: "0deg", l: "↑", aria: "Top" },
+  { v: "45deg", l: "↗", aria: "Top right" },
+  { v: "270deg", l: "←", aria: "Left" },
+  { center: true },
+  { v: "90deg", l: "→", aria: "Right" },
+  { v: "225deg", l: "↙", aria: "Bottom left" },
+  { v: "180deg", l: "↓", aria: "Bottom" },
+  { v: "135deg", l: "↘", aria: "Bottom right" },
+];
+const presets = [
+  ["#6d5dfc", "#ff4fa3"],
+  ["#16c8f3", "#6d5dfc"],
+  ["#22c55e", "#16c8f3"],
+  ["#facc15", "#fb923c"],
+  ["#ff4fa3", "#facc15"],
+  ["#0f172a", "#4c1d95"],
+];
+---
+
+<div class="cc-tool" data-gradient>
+  <div class="gg__preview" data-preview></div>
+
+  <div class="gg__controls">
+    <div class="gg__col">
+      <span class="cc-field__label">Type</span>
+      <div class="cc-seg" role="group" aria-label="Gradient type" data-type>
+        <button type="button" data-t="linear" aria-pressed="true">Linear</button>
+        <button type="button" data-t="radial" aria-pressed="false">Radial</button>
+      </div>
+
+      <div class="gg__dir-wrap" data-dir-wrap>
+        <span class="cc-field__label">Direction</span>
+        <div class="gg__dir" role="group" aria-label="Gradient direction">
+          {directions.map((d) =>
+            "center" in d ? (
+              <span class="gg__dir-center" data-angle>90°</span>
+            ) : (
+              <button type="button" class="gg__dir-btn" data-dir={d.v} aria-label={d.aria} aria-pressed={d.v === "90deg" ? "true" : "false"}>{d.l}</button>
+            )
+          )}
+        </div>
+      </div>
+    </div>
+
+    <div class="gg__col">
+      <span class="cc-field__label">Color stops</span>
+      <div class="gg__stops" data-stops></div>
+      <button type="button" class="cc-copy gg__add" data-add>+ Add color</button>
+
+      <span class="cc-field__label gg__presets-label">Presets</span>
+      <div class="gg__presets" data-presets>
+        {presets.map((p) => (
+          <button
+            type="button"
+            class="gg__preset"
+            data-preset={p.join(",")}
+            style={`background:linear-gradient(90deg, ${p.join(", ")})`}
+            aria-label={`Use preset ${p.join(" to ")}`}
+          ></button>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <div class="gg__css">
+    <code class="cc-mono" data-css></code>
+    <button type="button" class="cc-copy" data-copy>Copy CSS</button>
+  </div>
+</div>
+
+<style>
+  .gg__preview {
+    height: 200px;
+    border-radius: var(--cc-radius-lg);
+    border: 1px solid var(--cc-border);
+    margin-bottom: 1.5rem;
+    box-shadow: var(--cc-shadow-soft);
+  }
+  .gg__controls { display: grid; gap: 2rem; }
+  .gg__col { display: flex; flex-direction: column; gap: 0.6rem; align-items: flex-start; }
+  .gg__dir-wrap { margin-top: 0.5rem; }
+  .gg__dir-wrap[hidden] { display: none; }
+  .gg__dir {
+    display: grid;
+    grid-template-columns: repeat(3, 44px);
+    grid-template-rows: repeat(3, 44px);
+    gap: 6px;
+    margin-top: 0.5rem;
+  }
+  .gg__dir-btn {
+    border: 1px solid var(--cc-border);
+    background: var(--cc-surface-soft);
+    border-radius: 10px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    color: var(--cc-muted);
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  .gg__dir-btn:hover { color: var(--cc-text); }
+  .gg__dir-btn[aria-pressed="true"] {
+    background: var(--cc-primary);
+    color: #fff;
+    border-color: var(--cc-primary);
+  }
+  .gg__dir-center {
+    display: grid; place-items: center;
+    font-size: 0.78rem; font-weight: 700; color: var(--cc-faint);
+    font-family: var(--cc-font-mono);
+  }
+  .gg__add { margin-top: 0.3rem; }
+  .gg__presets-label { margin-top: 0.75rem; }
+  .gg__presets { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.4rem; }
+  .gg__preset {
+    width: 52px; height: 32px; border-radius: 8px; border: 1px solid var(--cc-border);
+    cursor: pointer; transition: transform 0.12s ease;
+  }
+  .gg__preset:hover { transform: scale(1.06); }
+  .gg__css {
+    margin-top: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    justify-content: space-between;
+    padding: 0.85rem 1rem;
+    background: var(--cc-surface-soft);
+    border: 1px solid var(--cc-border);
+    border-radius: var(--cc-radius-md);
+  }
+  .gg__css code { font-size: 0.85rem; overflow-wrap: anywhere; }
+  @media (min-width: 760px) {
+    .gg__controls { grid-template-columns: auto 1fr; }
+  }
+</style>
+
+<!-- Global: stop swatches are injected via innerHTML. -->
+<style is:global>
+  [data-gradient] .gg__stops { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  [data-gradient] .gg__stop { position: relative; }
+  [data-gradient] .gg__stop .cc-swatch-btn { width: 46px; height: 46px; border-radius: 12px; }
+  [data-gradient] .gg__stop-remove {
+    position: absolute; top: -7px; right: -7px; width: 20px; height: 20px;
+    border-radius: 50%; border: 2px solid var(--cc-surface); background: var(--cc-text);
+    color: #fff; font-size: 0.65rem; cursor: pointer; display: grid; place-items: center; padding: 0;
+  }
+</style>
+
+<script>
+  import { copyText, flashCopied } from "../../scripts/clipboard";
+  import { attachColorPicker } from "../../scripts/colorPicker";
+
+  const root = document.querySelector<HTMLElement>("[data-gradient]");
+  if (root) {
+    const preview = root.querySelector<HTMLElement>("[data-preview]")!;
+    const stopsEl = root.querySelector<HTMLElement>("[data-stops]")!;
+    const cssEl = root.querySelector<HTMLElement>("[data-css]")!;
+    const copyBtn = root.querySelector<HTMLButtonElement>("[data-copy]")!;
+    const addBtn = root.querySelector<HTMLButtonElement>("[data-add]")!;
+    const dirWrap = root.querySelector<HTMLElement>("[data-dir-wrap]")!;
+    const angleEl = root.querySelector<HTMLElement>("[data-angle]")!;
+    const dirBtns = root.querySelectorAll<HTMLButtonElement>("[data-dir]");
+    const typeBtns = root.querySelectorAll<HTMLButtonElement>("[data-type] button");
+
+    let stops = ["#6d5dfc", "#ff4fa3"];
+    let direction = "90deg";
+    let type: "linear" | "radial" = "linear";
+
+    function css() {
+      const list = stops.join(", ");
+      return type === "linear"
+        ? `background: linear-gradient(${direction}, ${list});`
+        : `background: radial-gradient(circle, ${list});`;
+    }
+
+    function paint() {
+      const value = css();
+      preview.style.cssText = value.replace(/^background:\s*/, "background:") + ";height:200px;";
+      cssEl.textContent = value;
+    }
+
+    function renderStops() {
+      stopsEl.innerHTML = stops
+        .map(
+          (_, i) =>
+            `<span class="gg__stop"><button type="button" class="cc-swatch-btn" aria-label="Color stop ${i + 1}" data-stop="${i}"></button>${stops.length > 2 ? `<button type="button" class="gg__stop-remove" aria-label="Remove stop" data-remove="${i}">✕</button>` : ""}</span>`
+        )
+        .join("");
+      stopsEl.querySelectorAll<HTMLButtonElement>("[data-stop]").forEach((btn) => {
+        const i = Number(btn.dataset.stop);
+        attachColorPicker({
+          trigger: btn,
+          value: stops[i],
+          onInput: (h) => {
+            stops[i] = h;
+            paint();
+          },
+        });
+      });
+      stopsEl.querySelectorAll<HTMLButtonElement>("[data-remove]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          stops.splice(Number(btn.dataset.remove), 1);
+          renderStops();
+          paint();
+        });
+      });
+      addBtn.disabled = stops.length >= 5;
+      addBtn.style.opacity = stops.length >= 5 ? "0.5" : "1";
+    }
+
+    dirBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        dirBtns.forEach((b) => b.setAttribute("aria-pressed", "false"));
+        btn.setAttribute("aria-pressed", "true");
+        direction = btn.dataset.dir!;
+        angleEl.textContent = direction.replace("deg", "°");
+        paint();
+      });
+    });
+    typeBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        typeBtns.forEach((b) => b.setAttribute("aria-pressed", "false"));
+        btn.setAttribute("aria-pressed", "true");
+        type = btn.dataset.t as "linear" | "radial";
+        dirWrap.hidden = type === "radial";
+        paint();
+      });
+    });
+    root.querySelectorAll<HTMLButtonElement>("[data-preset]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        stops = btn.dataset.preset!.split(",");
+        renderStops();
+        paint();
+      });
+    });
+    addBtn.addEventListener("click", () => {
+      if (stops.length < 5) {
+        stops.push("#16c8f3");
+        renderStops();
+        paint();
+      }
+    });
+    copyBtn.addEventListener("click", async () => {
+      if (await copyText(css())) flashCopied(copyBtn);
+    });
+
+    renderStops();
+    paint();
+  }
+</script>

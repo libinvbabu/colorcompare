@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "colorcompare",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "astro-site", "run", "dev"],
+      "port": 4321
+    }
+  ]
+}

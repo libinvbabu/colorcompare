@@ -1,0 +1,63 @@
+---
+title: "How to Build a Dark Mode Color Palette"
+description: "Dark mode is more than inverting colors. Learn how to layer surfaces, soften text, and tune accents for a dark UI that's comfortable and readable."
+pubDate: 2026-06-04
+author: "ColorCompare Team"
+tags: ["dark mode", "ui design", "accessibility"]
+seoTitle: "How to Build a Dark Mode Color Palette — A Practical Guide"
+seoDescription: "Learn how to build a dark mode color palette: avoid pure black, layer surfaces, soften text, tune accents, and keep contrast accessible. A practical guide."
+cover: ["#0f172a", "#38bdf8"]
+---
+
+Dark mode looks simple — just flip black and white, right? In practice, the best dark themes are carefully constructed: layered surfaces, softened text, and accents tuned so they glow without glaring. Here's how to build one that feels comfortable instead of harsh.
+
+## Don't use pure black
+
+The most common dark mode mistake is a pure black (`#000000`) background. It creates harsh, high-contrast edges that cause eye strain and make text feel like it's vibrating — an effect called halation.
+
+Instead, start with a **very dark gray** like `#0f172a` or `#1a1a1a`. It's easier on the eyes and, crucially, lets you layer lighter surfaces on top. Pure black is best reserved for OLED screens where it genuinely saves battery.
+
+## Layer your surfaces
+
+In dark mode, elevation is shown by making things **lighter**, not by adding shadows (shadows barely show on dark backgrounds). So you need at least two background tones:
+
+- A **base background** — the darkest layer.
+- A **raised surface** — slightly lighter, for cards, modals, and panels.
+
+The small lightness gap between them is what makes cards feel like they float. Build a consistent set of dark steps with the [Shades & Tints Generator](/tools/shades-and-tints-generator/) — generate shades from your base and pick two or three for your layers.
+
+## Soften your text
+
+Pure white text (`#ffffff`) on a dark background is too intense — it glares. Use a softened off-white like `#f1f5f9` or `#ededed` for body text instead. For secondary text, step down to a muted gray, but verify it still passes contrast.
+
+## Tune your accents
+
+Bright, saturated accent colors that look great in light mode often **vibrate** against a dark background. The fix is to desaturate them slightly and, if needed, lighten them so they stay vivid without straining the eye.
+
+Test each accent against your dark surface in the [Contrast Checker](/tools/contrast-checker/) — interactive elements need at least 3:1 against their background, and accent text needs 4.5:1.
+
+## Start from a proven palette
+
+You don't have to build every tone from scratch. The [dark mode palettes](/colors/dark-mode-palettes/) collection gives you complete dark schemes — background, surface, text, muted, and accent — already tuned for readability. Pick one as a starting point and adjust to your brand.
+
+For the broader principles of role-based interface color, the [UI color inspiration](/colors/ui-color-inspiration/) collection covers both light and dark.
+
+## Verify the whole thing
+
+Dark mode has its own accessibility traps. Before you ship:
+
+- Compare your light and dark accent versions in [Color Compare](/tools/color-compare/) to keep your brand recognizable across both.
+- Confirm every text tone meets contrast on the surface it sits on.
+- Check that focus states and borders are still visible — they often disappear in dark mode.
+
+Our [accessible UI colors](/blog/accessible-ui-colors/) guide goes deeper on the contrast targets that apply to both themes.
+
+## A quick dark mode checklist
+
+- Background is very dark gray, not pure black.
+- At least two surface tones create elevation through lightness.
+- Body text is softened off-white, not pure white.
+- Accents are slightly desaturated and pass contrast.
+- Both themes were tested, not just assumed to mirror each other.
+
+Dark mode done well feels effortless — but that ease comes from deliberate choices about layering, softening, and tuning. Get those right and your dark theme will be the one users actually prefer.

@@ -1,0 +1,53 @@
+---
+title: "HEX, RGB, HSL & CMYK: Color Formats Explained"
+description: "A plain-English guide to the four color formats every designer meets — what each one is for, when to use it, and how to convert between them."
+pubDate: 2026-05-08
+author: "ColorCompare Team"
+tags: ["color theory", "css", "fundamentals"]
+seoTitle: "HEX, RGB, HSL & CMYK Explained — Color Formats Guide"
+seoDescription: "Understand HEX, RGB, HSL, and CMYK color formats: what each is for, when to use it, and how to convert between them with free tools. A practical designer's guide."
+cover: ["#0ea5e9", "#22c55e"]
+---
+
+Open any design tool and you'll see the same color written four different ways — HEX, RGB, HSL, and CMYK. They all describe color, but each exists for a different job. Knowing which to reach for (and how to convert between them) saves a surprising amount of friction. Here's the plain-English version.
+
+## HEX — the web's default
+
+A HEX code like `#ff6600` is a base-16 shorthand for red, green, and blue channels. The first two digits are red, the next two green, the last two blue. It's compact, universally supported, and the format you'll see most in CSS, brand guides, and design tools.
+
+HEX is great for **storing and sharing** a color, but it's hard to reason about — you can't easily tell from `#ff6600` how to make it slightly lighter. That's where the other formats come in.
+
+## RGB — how screens actually work
+
+RGB lists the same three channels as numbers from 0 to 255: `rgb(255, 102, 0)`. It maps directly to how a screen emits light by mixing red, green, and blue.
+
+The big advantage of RGB is **transparency**. Switch to `rgba(255, 102, 0, 0.5)` and you get 50% opacity — something HEX handles awkwardly. Any time you need a semi-transparent overlay or shadow, RGB is the natural choice. Convert instantly with the [HEX to RGB Converter](/tools/hex-to-rgb/), or go the other way with the [RGB to HEX Converter](/tools/rgb-to-hex/).
+
+## HSL — the one humans think in
+
+HSL describes a color as **Hue, Saturation, and Lightness**: `hsl(24, 100%, 50%)`.
+
+- **Hue** — the color itself, as an angle on the wheel (0–360°).
+- **Saturation** — how vivid it is, from gray to pure color.
+- **Lightness** — how light or dark, from black to white.
+
+HSL is the most intuitive format for *adjusting* color. Want a hover state? Drop the lightness a few percent. Want a calmer version? Lower the saturation. Because changes are predictable, HSL is a favorite for design systems and theming. To see the HSL behind any color, use the [HEX to RGB Converter](/tools/hex-to-rgb/) — it shows HSL alongside RGB.
+
+## CMYK — for ink, not light
+
+CMYK (Cyan, Magenta, Yellow, Key/black) is the format for **print**. Where screens create color by adding light, printers create it by layering ink, which works subtractively.
+
+Because ink has a narrower gamut than a screen, vivid on-screen colors often look duller once printed. If you're sending anything to a printer — business cards, packaging, posters — convert your colors with the [CMYK Converter](/tools/cmyk-converter/) to get a print-ready starting point, then confirm with a physical proof.
+
+## Which format should you use?
+
+- **Storing or sharing a color?** HEX.
+- **Need transparency?** RGB / RGBA.
+- **Adjusting or theming?** HSL.
+- **Printing?** CMYK.
+
+The good news is you rarely have to choose just one — you convert as needed. If you ever want to sanity-check exactly what a CSS color string renders to, paste it into the [CSS Color Preview](/tools/css-color-preview/) and see the normalized HEX, RGB, and HSL all at once.
+
+## The takeaway
+
+These aren't competing standards — they're tools for different stages of the same job. Design and store in HEX, reach for RGB when you need alpha, think in HSL when you're tuning, and switch to CMYK at the print stage. If the underlying concepts (hue, saturation, lightness) feel shaky, our [color theory basics](/blog/color-theory-basics/) guide walks through them with examples you can try immediately.

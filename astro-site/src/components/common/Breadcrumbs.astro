@@ -1,0 +1,65 @@
+---
+import Container from "./Container.astro";
+import type { Crumb } from "../../utils/schema";
+
+interface Props {
+  crumbs: Crumb[];
+  class?: string;
+}
+
+const { crumbs, class: className = "" } = Astro.props;
+---
+
+<nav class={`crumbs ${className}`} aria-label="Breadcrumb">
+  <Container>
+    <ol>
+      {
+        crumbs.map((c, i) => (
+          <li>
+            {i < crumbs.length - 1 ? (
+              <a href={c.path}>{c.name}</a>
+            ) : (
+              <span aria-current="page">{c.name}</span>
+            )}
+            {i < crumbs.length - 1 && <span class="crumbs__sep" aria-hidden="true">/</span>}
+          </li>
+        ))
+      }
+    </ol>
+  </Container>
+</nav>
+
+<style>
+  .crumbs {
+    padding-top: 1.5rem;
+  }
+  .crumbs ol {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    font-size: 0.85rem;
+    color: var(--cc-faint);
+  }
+  .crumbs li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .crumbs a {
+    color: var(--cc-muted);
+  }
+  .crumbs a:hover {
+    color: var(--cc-primary-dark);
+  }
+  .crumbs span[aria-current] {
+    color: var(--cc-text);
+    font-weight: 600;
+  }
+  .crumbs__sep {
+    color: var(--cc-border-strong);
+  }
+</style>

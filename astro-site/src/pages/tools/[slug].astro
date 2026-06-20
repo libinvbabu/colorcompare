@@ -1,0 +1,41 @@
+---
+import BaseLayout from "../../components/layout/BaseLayout.astro";
+import ToolLayout from "../../layouts/ToolLayout.astro";
+import { tools, getTool } from "../../data/tools";
+import { breadcrumbSchema, softwareAppSchema, faqSchema } from "../../utils/schema";
+
+export function getStaticPaths() {
+  return tools.map((tool) => ({
+    params: { slug: tool.slug },
+    props: { slug: tool.slug },
+  }));
+}
+
+const { slug } = Astro.props;
+const tool = getTool(slug)!;
+const path = `/tools/${tool.slug}/`;
+
+const schemas = [
+  softwareAppSchema({
+    name: tool.title,
+    description: tool.seoDescription,
+    path,
+    category: "DesignApplication",
+  }),
+  breadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Tools", path: "/tools/" },
+    { name: tool.title, path },
+  ]),
+  ...(tool.faqs.length ? [faqSchema(tool.faqs)] : []),
+];
+---
+
+<BaseLayout
+  title={tool.seoTitle}
+  description={tool.seoDescription}
+  canonical={path}
+  schemas={schemas}
+>
+  <ToolLayout tool={tool} />
+</BaseLayout>

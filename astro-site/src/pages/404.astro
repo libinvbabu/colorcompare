@@ -1,0 +1,30 @@
+---
+import BaseLayout from "../components/layout/BaseLayout.astro";
+import Container from "../components/common/Container.astro";
+import Button from "../components/common/Button.astro";
+---
+
+<BaseLayout title="Page not found — ColorCompare" description="The page you’re looking for doesn’t exist." noindex>
+  <Container width="narrow">
+    <div class="nf">
+      <p class="nf__code cc-text-gradient">404</p>
+      <h1 class="nf__title">This page got lost in the palette</h1>
+      <p class="nf__text">
+        The page you’re looking for doesn’t exist or may have moved. Let’s get
+        you back to working with color.
+      </p>
+      <div class="nf__actions">
+        <Button href="/">Go home</Button>
+        <Button href="/tools/" variant="secondary">Browse tools</Button>
+      </div>
+    </div>
+  </Container>
+</BaseLayout>
+
+<style>
+  .nf { text-align: center; padding: clamp(3rem, 10vw, 6rem) 0; }
+  .nf__code { font-size: clamp(4rem, 16vw, 8rem); font-weight: 800; line-height: 1; }
+  .nf__title { font-size: clamp(1.5rem, 4vw, 2.2rem); margin-top: 0.5rem; }
+  .nf__text { color: var(--cc-muted); margin-top: 1rem; font-size: 1.05rem; }
+  .nf__actions { margin-top: 1.75rem; display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+</style>

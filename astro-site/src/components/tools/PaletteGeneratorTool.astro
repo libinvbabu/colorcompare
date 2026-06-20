@@ -1,0 +1,234 @@
+---
+// Palette Generator — harmony-based palettes with a live in-context preview.
+const modes = [
+  { id: "complementary", label: "Complementary", desc: "Two opposite hues — maximum contrast and energy." },
+  { id: "analogous", label: "Analogous", desc: "Neighboring hues — calm, cohesive, and easy on the eye." },
+  { id: "triadic", label: "Triadic", desc: "Three evenly spaced hues — balanced and vibrant." },
+  { id: "tetradic", label: "Tetradic", desc: "Four hues in two pairs — rich and varied; use one as the lead." },
+  { id: "monochromatic", label: "Monochromatic", desc: "One hue across light to dark — minimal and modern." },
+];
+---
+
+<div class="cc-tool" data-palette>
+  <div class="pg__controls">
+    <div class="cc-field">
+      <label class="cc-field__label" for="pg-base">Base color</label>
+      <div class="cc-colorinput">
+        <button type="button" class="cc-swatch-btn" aria-label="Pick base color" data-pick></button>
+        <input type="text" id="pg-base" value="#6D5DFC" aria-label="Base color hex" data-hex />
+      </div>
+    </div>
+    <div class="cc-field">
+      <span class="cc-field__label">Harmony rule</span>
+      <div class="cc-seg" role="group" aria-label="Harmony mode" data-modes>
+        {modes.map((m, i) => (
+          <button type="button" data-mode={m.id} aria-pressed={i === 0 ? "true" : "false"}>{m.label}</button>
+        ))}
+      </div>
+      <p class="pg__desc cc-field__hint" data-desc>{modes[0].desc}</p>
+    </div>
+  </div>
+
+  <div class="pg__swatches" data-grid></div>
+
+  <div class="pg__demo-wrap">
+    <p class="pg__demo-label">Preview in context</p>
+    <div class="pg__demo" data-demo></div>
+  </div>
+
+  <button type="button" class="cc-copy pg__copy-all" data-copy-all>Copy all HEX</button>
+</div>
+
+<style>
+  .pg__controls { display: grid; gap: 1.5rem; margin-bottom: 1.5rem; }
+  .pg__desc { margin-top: 0.5rem; }
+  .pg__copy-all { margin-top: 1.25rem; }
+  .pg__demo-wrap { margin-top: 1.5rem; }
+  .pg__demo-label {
+    font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--cc-faint); margin-bottom: 0.6rem;
+  }
+</style>
+
+<!-- Global styles: applied to elements injected via innerHTML. -->
+<style is:global>
+  [data-palette] .pg__swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.6rem;
+  }
+  [data-palette] .pg-chip {
+    border: none;
+    border-radius: var(--cc-radius-md);
+    overflow: hidden;
+    cursor: pointer;
+    padding: 0;
+    text-align: left;
+    box-shadow: var(--cc-shadow-soft);
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+  }
+  [data-palette] .pg-chip:hover { transform: translateY(-4px); box-shadow: var(--cc-shadow-hover); }
+  [data-palette] .pg-chip__color {
+    height: 120px;
+    display: flex;
+    align-items: flex-end;
+    padding: 0.6rem 0.7rem;
+    font-weight: 700;
+    font-size: 0.82rem;
+    font-family: var(--cc-font-mono);
+  }
+  [data-palette] .pg-chip__role {
+    display: block;
+    padding: 0.5rem 0.7rem;
+    font-size: 0.72rem;
+    color: var(--cc-muted);
+    background: var(--cc-surface);
+    border: 1px solid var(--cc-border);
+    border-top: none;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  [data-palette] .pg__demo {
+    border-radius: var(--cc-radius-lg);
+    padding: 1.75rem;
+    border: 1px solid var(--cc-border);
+    box-shadow: var(--cc-shadow-soft);
+  }
+  [data-palette] .pg-demo__top {
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  }
+  [data-palette] .pg-demo__brand { font-weight: 800; font-size: 1.05rem; letter-spacing: -0.02em; }
+  [data-palette] .pg-demo__pill {
+    padding: 0.5rem 1rem; border-radius: 999px; font-weight: 600; font-size: 0.85rem;
+  }
+  [data-palette] .pg-demo__title { font-size: clamp(1.4rem, 4vw, 2rem); margin-top: 1.25rem; font-weight: 800; }
+  [data-palette] .pg-demo__text { margin-top: 0.6rem; font-size: 0.95rem; max-width: 32rem; }
+  [data-palette] .pg-demo__dots { display: flex; gap: 0.4rem; margin-top: 1.25rem; }
+  [data-palette] .pg-demo__dots span { width: 26px; height: 26px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08); }
+</style>
+
+<script>
+  import {
+    normalizeHex,
+    generateHarmony,
+    readableTextColor,
+    hexToRgb,
+    rgbToHsl,
+    hslToRgb,
+    rgbToHex,
+    type HarmonyMode,
+  } from "../../utils/color";
+  import { copyText, flashCopied } from "../../scripts/clipboard";
+  import { attachColorPicker } from "../../scripts/colorPicker";
+
+  const DESCS: Record<string, string> = {
+    complementary: "Two opposite hues — maximum contrast and energy.",
+    analogous: "Neighboring hues — calm, cohesive, and easy on the eye.",
+    triadic: "Three evenly spaced hues — balanced and vibrant.",
+    tetradic: "Four hues in two pairs — rich and varied; use one as the lead.",
+    monochromatic: "One hue across light to dark — minimal and modern.",
+  };
+  const ROLES = ["Primary", "Secondary", "Accent", "Support", "Detail"];
+
+  const root = document.querySelector<HTMLElement>("[data-palette]");
+  if (root) {
+    const hexInput = root.querySelector<HTMLInputElement>("[data-hex]")!;
+    const trigger = root.querySelector<HTMLButtonElement>("[data-pick]")!;
+    const grid = root.querySelector<HTMLElement>("[data-grid]")!;
+    const demo = root.querySelector<HTMLElement>("[data-demo]")!;
+    const descEl = root.querySelector<HTMLElement>("[data-desc]")!;
+    const modeBtns = root.querySelectorAll<HTMLButtonElement>("[data-mode]");
+    const copyAll = root.querySelector<HTMLButtonElement>("[data-copy-all]")!;
+
+    let base = "#6d5dfc";
+    let mode: HarmonyMode = "complementary";
+    let current: string[] = [];
+
+    const picker = attachColorPicker({
+      trigger,
+      value: base,
+      onInput: (h) => {
+        base = h;
+        hexInput.value = h.toUpperCase();
+        render();
+      },
+    });
+
+    function render() {
+      current = generateHarmony(base, mode);
+
+      grid.innerHTML = current
+        .map((c, i) => {
+          const text = readableTextColor(hexToRgb(c)!);
+          const role = ROLES[i] ?? `Color ${i + 1}`;
+          return `<button type="button" class="pg-chip" data-copy="${c}" aria-label="Copy ${c.toUpperCase()}">
+            <span class="pg-chip__color" style="background:${c};color:${text}">${c.toUpperCase()}</span>
+            <span class="pg-chip__role">${role}</span>
+          </button>`;
+        })
+        .join("");
+      grid.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          if (await copyText(btn.dataset.copy!)) {
+            flashCopied(btn.querySelector(".pg-chip__color") as HTMLElement, "Copied!");
+          }
+        });
+      });
+
+      renderDemo();
+    }
+
+    function renderDemo() {
+      // Build a light surface + readable text from the base hue so the mock
+      // always looks like a real UI regardless of harmony type.
+      const baseRgb = hexToRgb(base)!;
+      const baseHsl = rgbToHsl(baseRgb);
+      const surface = rgbToHex(hslToRgb({ h: baseHsl.h, s: Math.min(baseHsl.s, 40), l: 96 }));
+      const primary = current[0] ?? base;
+      const accent = current[current.length - 1] ?? base;
+      const onSurface = readableTextColor(hexToRgb(surface)!);
+      const onAccent = readableTextColor(hexToRgb(accent)!);
+      const muted = rgbToHex(hslToRgb({ h: baseHsl.h, s: 12, l: 45 }));
+
+      demo.style.background = surface;
+      demo.innerHTML = `
+        <div class="pg-demo__top">
+          <span class="pg-demo__brand" style="color:${primary}">◆ Palette Co.</span>
+          <span class="pg-demo__pill" style="background:${accent};color:${onAccent}">Get started</span>
+        </div>
+        <p class="pg-demo__title" style="color:${onSurface}">Colors that work together</p>
+        <p class="pg-demo__text" style="color:${muted}">This mock interface uses your generated palette — primary for brand, accent for actions, and the rest as supporting tones.</p>
+        <div class="pg-demo__dots">${current.map((c) => `<span style="background:${c}"></span>`).join("")}</div>
+      `;
+    }
+
+    hexInput.addEventListener("input", () => {
+      const norm = normalizeHex(hexInput.value);
+      const wrap = hexInput.closest(".cc-colorinput");
+      if (norm) {
+        wrap?.removeAttribute("data-invalid");
+        base = norm;
+        picker.setValue(norm);
+        render();
+      } else {
+        wrap?.setAttribute("data-invalid", "");
+      }
+    });
+    modeBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        modeBtns.forEach((b) => b.setAttribute("aria-pressed", "false"));
+        btn.setAttribute("aria-pressed", "true");
+        mode = btn.dataset.mode as HarmonyMode;
+        descEl.textContent = DESCS[mode];
+        render();
+      });
+    });
+    copyAll.addEventListener("click", async () => {
+      if (await copyText(current.map((c) => c.toUpperCase()).join(", "))) {
+        flashCopied(copyAll, "Copied all!");
+      }
+    });
+
+    render();
+  }
+</script>

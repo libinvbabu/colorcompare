@@ -1,0 +1,269 @@
+---
+import Container from "../common/Container.astro";
+import { mainNav, headerCta } from "../../data/nav";
+
+const currentPath = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === "/" ? currentPath === "/" : currentPath.startsWith(href);
+---
+
+<header class="cc-header" data-header>
+  <Container>
+    <div class="cc-header__bar">
+      <a href="/" class="cc-logo" aria-label="ColorCompare home">
+        <span class="cc-logo__mark" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </span>
+        <span class="cc-logo__text">Color<span>Compare</span></span>
+      </a>
+
+      <nav class="cc-nav" aria-label="Primary">
+        {
+          mainNav.map((item) => (
+            <a
+              href={item.href}
+              class="cc-nav__link"
+              aria-current={isActive(item.href) ? "page" : undefined}
+            >
+              {item.label}
+            </a>
+          ))
+        }
+      </nav>
+
+      <div class="cc-header__actions">
+        <a href={headerCta.href} class="cc-header__cta">{headerCta.label}</a>
+        <button
+          type="button"
+          class="cc-burger"
+          aria-label="Open menu"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+          data-burger
+        >
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </Container>
+
+  <div class="cc-mobile" id="mobile-menu" data-mobile hidden>
+    <Container>
+      <nav class="cc-mobile__nav" aria-label="Mobile">
+        {
+          mainNav.map((item) => (
+            <a
+              href={item.href}
+              class="cc-mobile__link"
+              aria-current={isActive(item.href) ? "page" : undefined}
+            >
+              {item.label}
+            </a>
+          ))
+        }
+        <a href={headerCta.href} class="cc-mobile__cta">{headerCta.label}</a>
+      </nav>
+    </Container>
+  </div>
+</header>
+
+<style>
+  .cc-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: saturate(180%) blur(12px);
+    background: color-mix(in srgb, var(--cc-bg) 82%, transparent);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+  .cc-header[data-scrolled] {
+    border-bottom-color: var(--cc-border);
+    background: color-mix(in srgb, var(--cc-bg) 92%, transparent);
+  }
+  .cc-header__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 66px;
+    gap: 1rem;
+  }
+
+  /* Logo */
+  .cc-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 800;
+    font-size: 1.2rem;
+    letter-spacing: -0.02em;
+  }
+  .cc-logo__mark {
+    display: grid;
+    grid-template-columns: repeat(2, 9px);
+    grid-auto-rows: 9px;
+    gap: 3px;
+    padding: 5px;
+    border-radius: 10px;
+    background: var(--cc-surface);
+    box-shadow: var(--cc-shadow-soft);
+    border: 1px solid var(--cc-border);
+  }
+  .cc-logo__mark span {
+    border-radius: 3px;
+  }
+  .cc-logo__mark span:nth-child(1) { background: var(--cc-primary); }
+  .cc-logo__mark span:nth-child(2) { background: var(--cc-pink); }
+  .cc-logo__mark span:nth-child(3) {
+    background: var(--cc-cyan);
+    grid-column: span 2;
+    width: 21px;
+  }
+  .cc-logo__text span {
+    color: var(--cc-primary);
+  }
+
+  /* Desktop nav */
+  .cc-nav {
+    display: none;
+    gap: 0.35rem;
+  }
+  .cc-nav__link {
+    padding: 0.5rem 0.8rem;
+    border-radius: var(--cc-radius-pill);
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--cc-muted);
+    transition: color 0.15s ease, background 0.15s ease;
+  }
+  .cc-nav__link:hover {
+    color: var(--cc-text);
+    background: var(--cc-surface-soft);
+  }
+  .cc-nav__link[aria-current="page"] {
+    color: var(--cc-primary-dark);
+    background: var(--cc-primary-soft);
+  }
+
+  .cc-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .cc-header__cta {
+    display: none;
+    padding: 0.6rem 1.1rem;
+    border-radius: var(--cc-radius-pill);
+    background: var(--cc-gradient-brand);
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.92rem;
+    box-shadow: 0 10px 24px rgba(109, 93, 252, 0.3);
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+  }
+  .cc-header__cta:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 30px rgba(109, 93, 252, 0.4);
+  }
+
+  /* Burger */
+  .cc-burger {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 42px;
+    height: 42px;
+    padding: 0 10px;
+    border-radius: 12px;
+    background: var(--cc-surface);
+    border: 1px solid var(--cc-border);
+    cursor: pointer;
+  }
+  .cc-burger span {
+    height: 2px;
+    background: var(--cc-text);
+    border-radius: 2px;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+  .cc-burger[aria-expanded="true"] span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .cc-burger[aria-expanded="true"] span:nth-child(2) {
+    opacity: 0;
+  }
+  .cc-burger[aria-expanded="true"] span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* Mobile menu */
+  .cc-mobile {
+    border-top: 1px solid var(--cc-border);
+    background: var(--cc-surface);
+    padding-block: 1rem;
+    box-shadow: var(--cc-shadow-soft);
+  }
+  .cc-mobile__nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .cc-mobile__link {
+    padding: 0.85rem 0.75rem;
+    border-radius: var(--cc-radius-sm);
+    font-weight: 500;
+    color: var(--cc-text);
+  }
+  .cc-mobile__link:hover,
+  .cc-mobile__link[aria-current="page"] {
+    background: var(--cc-surface-soft);
+    color: var(--cc-primary-dark);
+  }
+  .cc-mobile__cta {
+    margin-top: 0.5rem;
+    padding: 0.85rem;
+    text-align: center;
+    border-radius: var(--cc-radius-pill);
+    background: var(--cc-gradient-brand);
+    color: #fff;
+    font-weight: 600;
+  }
+
+  @media (min-width: 900px) {
+    .cc-nav { display: flex; }
+    .cc-header__cta { display: inline-flex; }
+    .cc-burger { display: none; }
+    .cc-mobile { display: none !important; }
+  }
+</style>
+
+<script>
+  const header = document.querySelector<HTMLElement>("[data-header]");
+  const burger = document.querySelector<HTMLButtonElement>("[data-burger]");
+  const mobile = document.querySelector<HTMLElement>("[data-mobile]");
+
+  function setOpen(open: boolean) {
+    if (!burger || !mobile) return;
+    burger.setAttribute("aria-expanded", String(open));
+    burger.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    mobile.hidden = !open;
+  }
+
+  burger?.addEventListener("click", () => {
+    setOpen(burger.getAttribute("aria-expanded") !== "true");
+  });
+
+  // Close on Escape
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") setOpen(false);
+  });
+
+  // Shadow/border on scroll
+  const onScroll = () => {
+    if (!header) return;
+    if (window.scrollY > 8) header.setAttribute("data-scrolled", "");
+    else header.removeAttribute("data-scrolled");
+  };
+  onScroll();
+  window.addEventListener("scroll", onScroll, { passive: true });
+</script>

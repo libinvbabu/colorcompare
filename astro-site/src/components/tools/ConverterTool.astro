@@ -1,0 +1,199 @@
+---
+// Converter — one component, three modes: hex-to-rgb, rgb-to-hex, cmyk-converter.
+interface Props {
+  mode: "hex-to-rgb" | "rgb-to-hex" | "cmyk-converter";
+}
+const { mode } = Astro.props;
+const isRgbInput = mode === "rgb-to-hex";
+---
+
+<div class="cc-tool" data-converter data-mode={mode}>
+  <div class="cv__grid">
+    <div class="cv__input">
+      {
+        isRgbInput ? (
+          <div class="cv__rgb">
+            {["r", "g", "b"].map((ch) => (
+              <div class="cc-field">
+                <label class="cc-field__label" for={`cv-${ch}`}>{ch.toUpperCase()}</label>
+                <input
+                  class="cc-input"
+                  type="number"
+                  min="0"
+                  max="255"
+                  id={`cv-${ch}`}
+                  value={ch === "r" ? "109" : ch === "g" ? "93" : "252"}
+                  data-ch={ch}
+                />
+                <input type="range" min="0" max="255" value={ch === "r" ? "109" : ch === "g" ? "93" : "252"} data-range={ch} aria-label={`${ch.toUpperCase()} slider`} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div class="cc-field">
+            <label class="cc-field__label" for="cv-hex">
+              {mode === "cmyk-converter" ? "Color (HEX or RGB)" : "HEX color"}
+            </label>
+            <div class="cc-colorinput">
+              <button type="button" class="cc-swatch-btn" aria-label="Pick color" data-pick></button>
+              <input type="text" id="cv-hex" value="#6D5DFC" aria-label="Color value" data-hex />
+            </div>
+          </div>
+        )
+      }
+      <div class="cv__swatch cc-swatch" data-swatch></div>
+    </div>
+
+    <div class="cv__output">
+      <div class="cc-values" data-values></div>
+      {
+        mode === "cmyk-converter" && (
+          <p class="cv__note">
+            CMYK values are a standard approximation. Final printed color depends on
+            your printer, ink, paper, and color profile — always confirm with a proof.
+          </p>
+        )
+      }
+    </div>
+  </div>
+</div>
+
+<style>
+  .cv__grid { display: grid; gap: 1.5rem; }
+  .cv__rgb { display: grid; gap: 1rem; }
+  .cv__rgb .cc-field { gap: 0.5rem; }
+  .cv__rgb input[type="range"] { width: 100%; accent-color: var(--cc-primary); }
+  .cv__swatch { margin-top: 1rem; }
+  .cv__note {
+    margin-top: 1rem;
+    font-size: 0.82rem;
+    color: var(--cc-muted);
+    background: var(--cc-surface-soft);
+    border: 1px solid var(--cc-border);
+    border-radius: var(--cc-radius-sm);
+    padding: 0.7rem 0.85rem;
+  }
+  @media (min-width: 720px) {
+    .cv__grid { grid-template-columns: 0.9fr 1.1fr; align-items: start; }
+  }
+</style>
+
+<script>
+  import {
+    parseColor,
+    rgbToHex,
+    rgbToHsl,
+    rgbToCmyk,
+    formatRgb,
+    formatHsl,
+    formatCmyk,
+    readableTextColor,
+    type RGB,
+  } from "../../utils/color";
+  import { copyText, flashCopied } from "../../scripts/clipboard";
+  import { attachColorPicker } from "../../scripts/colorPicker";
+
+  const root = document.querySelector<HTMLElement>("[data-converter]");
+  if (root) {
+    const mode = root.dataset.mode!;
+    const swatch = root.querySelector<HTMLElement>("[data-swatch]")!;
+    const values = root.querySelector<HTMLElement>("[data-values]")!;
+
+    function rowsFor(rgb: RGB): [string, string][] {
+      const hex = rgbToHex(rgb);
+      const hsl = rgbToHsl(rgb);
+      const cmyk = rgbToCmyk(rgb);
+      if (mode === "cmyk-converter") {
+        return [
+          ["CMYK", formatCmyk(cmyk)],
+          ["HEX", hex.toUpperCase()],
+          ["RGB", formatRgb(rgb)],
+        ];
+      }
+      if (mode === "rgb-to-hex") {
+        return [
+          ["HEX", hex.toUpperCase()],
+          ["HSL", formatHsl(hsl)],
+          ["CSS", `color: ${hex};`],
+        ];
+      }
+      // hex-to-rgb
+      return [
+        ["RGB", formatRgb(rgb)],
+        ["HSL", formatHsl(hsl)],
+        ["CSS rgb()", `color: ${formatRgb(rgb)};`],
+        ["CSS hsl()", `color: ${formatHsl(hsl)};`],
+      ];
+    }
+
+    function paint(rgb: RGB) {
+      const hex = rgbToHex(rgb);
+      swatch.style.background = hex;
+      swatch.style.color = readableTextColor(rgb);
+      swatch.textContent = hex.toUpperCase();
+      values.innerHTML = rowsFor(rgb)
+        .map(
+          ([label, val]) =>
+            `<div class="cc-value"><span class="cc-value__label">${label}</span><span class="cc-value__val">${val}</span><button class="cc-copy" data-copy="${val}">Copy</button></div>`
+        )
+        .join("");
+      values.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          if (await copyText(btn.dataset.copy!)) flashCopied(btn);
+        });
+      });
+    }
+
+    if (mode === "rgb-to-hex") {
+      const nums = root.querySelectorAll<HTMLInputElement>("[data-ch]");
+      const ranges = root.querySelectorAll<HTMLInputElement>("[data-range]");
+      const readRgb = (): RGB => {
+        const get = (ch: string) =>
+          Math.max(0, Math.min(255, Number(root.querySelector<HTMLInputElement>(`[data-ch="${ch}"]`)!.value) || 0));
+        return { r: get("r"), g: get("g"), b: get("b") };
+      };
+      const sync = () => paint(readRgb());
+      nums.forEach((n) => {
+        n.addEventListener("input", () => {
+          const r = root.querySelector<HTMLInputElement>(`[data-range="${n.dataset.ch}"]`)!;
+          r.value = n.value;
+          sync();
+        });
+      });
+      ranges.forEach((r) => {
+        r.addEventListener("input", () => {
+          const n = root.querySelector<HTMLInputElement>(`[data-ch="${r.dataset.range}"]`)!;
+          n.value = r.value;
+          sync();
+        });
+      });
+      sync();
+    } else {
+      const hexInput = root.querySelector<HTMLInputElement>("[data-hex]")!;
+      const pick = root.querySelector<HTMLButtonElement>("[data-pick]")!;
+      const picker = attachColorPicker({
+        trigger: pick,
+        value: "#6d5dfc",
+        onInput: (h) => {
+          hexInput.value = h.toUpperCase();
+          const rgb = parseColor(h);
+          if (rgb) paint(rgb);
+        },
+      });
+      hexInput.addEventListener("input", () => {
+        const rgb = parseColor(hexInput.value);
+        const wrap = hexInput.closest(".cc-colorinput");
+        if (rgb) {
+          wrap?.removeAttribute("data-invalid");
+          picker.setValue(rgbToHex(rgb));
+          paint(rgb);
+        } else {
+          wrap?.setAttribute("data-invalid", "");
+        }
+      });
+      // Initial render from the default value.
+      const initial = parseColor(hexInput.value);
+      if (initial) paint(initial);
+    }
+  }
+</script>
