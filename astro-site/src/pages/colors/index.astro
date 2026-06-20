@@ -1,0 +1,82 @@
+---
+import BaseLayout from "../../components/layout/BaseLayout.astro";
+import Container from "../../components/common/Container.astro";
+import Breadcrumbs from "../../components/common/Breadcrumbs.astro";
+import AdSlot from "../../components/ads/AdSlot.astro";
+import { colorPages } from "../../data/colors";
+import { breadcrumbSchema } from "../../utils/schema";
+
+const title = "Color Palettes & Combinations — Browse by Use Case";
+const description =
+  "Browse curated color palettes with HEX codes — blue palettes, black and gold, pastels, website color schemes, wedding palettes, logo combinations, and more.";
+
+const schemas = [
+  breadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Palettes", path: "/colors/" },
+  ]),
+];
+---
+
+<BaseLayout title={title} description={description} canonical="/colors/" schemas={schemas}>
+  <Breadcrumbs crumbs={[{ name: "Home", path: "/" }, { name: "Palettes", path: "/colors/" }]} />
+
+  <Container>
+    <header class="colors-index__hero">
+      <h1>Color palettes &amp; combinations</h1>
+      <p>
+        Curated, ready-to-use color palettes for every kind of project. Click any
+        swatch to copy its HEX code, or open a collection for tips and use cases.
+      </p>
+    </header>
+
+    <div class="colors-index__grid">
+      {
+        colorPages.map((page) => (
+          <a class="cx-card" href={`/colors/${page.slug}/`}>
+            <span class="cx-card__swatches" aria-hidden="true">
+              {page.palettes[0].colors.slice(0, 6).map((c) => (
+                <span style={`background:${c}`} />
+              ))}
+            </span>
+            <span class="cx-card__body">
+              <strong>{page.title}</strong>
+              <span>{page.description}</span>
+            </span>
+          </a>
+        ))
+      }
+    </div>
+
+    <AdSlot slot="" format="horizontal" />
+  </Container>
+</BaseLayout>
+
+<style>
+  .colors-index__hero { max-width: 44rem; margin: 1.5rem 0 2.5rem; }
+  .colors-index__hero h1 { font-size: clamp(2rem, 5.5vw, 3rem); margin-bottom: 0.75rem; }
+  .colors-index__hero p { color: var(--cc-muted); font-size: 1.1rem; }
+  .colors-index__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  .cx-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--cc-surface);
+    border: 1px solid var(--cc-border);
+    border-radius: var(--cc-radius-lg);
+    box-shadow: var(--cc-shadow-soft);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.25s ease;
+  }
+  .cx-card:hover { transform: translateY(-4px); box-shadow: var(--cc-shadow-hover); }
+  .cx-card__swatches { display: grid; grid-template-columns: repeat(6, 1fr); height: 90px; }
+  .cx-card__swatches span { display: block; }
+  .cx-card__body { display: flex; flex-direction: column; gap: 0.3rem; padding: 1.1rem 1.2rem 1.3rem; }
+  .cx-card__body strong { font-size: 1.05rem; }
+  .cx-card__body span { font-size: 0.9rem; color: var(--cc-muted); }
+  @media (min-width: 640px) { .colors-index__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 980px) { .colors-index__grid { grid-template-columns: repeat(3, 1fr); } }
+</style>

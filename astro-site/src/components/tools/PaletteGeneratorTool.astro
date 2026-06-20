@@ -1,0 +1,125 @@
+---
+// Palette Generator — harmony-based palettes from a base color.
+const modes = [
+  { id: "complementary", label: "Complementary" },
+  { id: "analogous", label: "Analogous" },
+  { id: "triadic", label: "Triadic" },
+  { id: "tetradic", label: "Tetradic" },
+  { id: "monochromatic", label: "Monochromatic" },
+];
+---
+
+<div class="cc-tool" data-palette>
+  <div class="pg__controls">
+    <div class="cc-field">
+      <label class="cc-field__label" for="pg-base">Base color</label>
+      <div class="cc-colorinput">
+        <input type="color" id="pg-base-pick" value="#6d5dfc" aria-label="Pick base color" data-pick />
+        <input type="text" id="pg-base" value="#6D5DFC" aria-label="Base color hex" data-hex />
+      </div>
+    </div>
+    <div class="cc-field">
+      <span class="cc-field__label">Harmony</span>
+      <div class="cc-seg" role="group" aria-label="Harmony mode" data-modes>
+        {modes.map((m, i) => (
+          <button type="button" data-mode={m.id} aria-pressed={i === 0 ? "true" : "false"}>{m.label}</button>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <div class="pg__out">
+    <div class="cc-palette" data-grid></div>
+    <button type="button" class="cc-copy pg__copy-all" data-copy-all>Copy all HEX</button>
+  </div>
+</div>
+
+<style>
+  .pg__controls { display: grid; gap: 1.25rem; margin-bottom: 1.5rem; }
+  .pg__out { display: grid; gap: 1rem; }
+  .cc-palette {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .pg__copy-all { justify-self: start; }
+  @media (min-width: 640px) {
+    .cc-palette { grid-template-columns: repeat(5, 1fr); }
+  }
+</style>
+
+<script>
+  import {
+    normalizeHex,
+    generateHarmony,
+    readableTextColor,
+    hexToRgb,
+    type HarmonyMode,
+  } from "../../utils/color";
+  import { copyText, flashCopied } from "../../scripts/clipboard";
+
+  const root = document.querySelector<HTMLElement>("[data-palette]");
+  if (root) {
+    const hex = root.querySelector<HTMLInputElement>("[data-hex]")!;
+    const pick = root.querySelector<HTMLInputElement>("[data-pick]")!;
+    const grid = root.querySelector<HTMLElement>("[data-grid]")!;
+    const modeBtns = root.querySelectorAll<HTMLButtonElement>("[data-mode]");
+    const copyAll = root.querySelector<HTMLButtonElement>("[data-copy-all]")!;
+
+    let base = "#6d5dfc";
+    let mode: HarmonyMode = "complementary";
+    let current: string[] = [];
+
+    function render() {
+      current = generateHarmony(base, mode);
+      grid.innerHTML = current
+        .map((c) => {
+          const text = readableTextColor(hexToRgb(c)!);
+          return `<button type="button" class="cc-palette__chip" data-copy="${c}" aria-label="Copy ${c.toUpperCase()}">
+            <span class="cc-palette__color" style="background:${c};color:${text}"></span>
+            <span class="cc-palette__hex">${c.toUpperCase()}</span>
+          </button>`;
+        })
+        .join("");
+      grid.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          if (await copyText(btn.dataset.copy!)) {
+            const hexEl = btn.querySelector(".cc-palette__hex") as HTMLElement;
+            flashCopied(hexEl, "Copied!");
+          }
+        });
+      });
+    }
+
+    hex.addEventListener("input", () => {
+      const norm = normalizeHex(hex.value);
+      const wrap = hex.closest(".cc-colorinput");
+      if (norm) {
+        wrap?.removeAttribute("data-invalid");
+        base = norm;
+        pick.value = norm;
+        render();
+      } else {
+        wrap?.setAttribute("data-invalid", "");
+      }
+    });
+    pick.addEventListener("input", () => {
+      base = pick.value;
+      hex.value = pick.value.toUpperCase();
+      render();
+    });
+    modeBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        modeBtns.forEach((b) => b.setAttribute("aria-pressed", "false"));
+        btn.setAttribute("aria-pressed", "true");
+        mode = btn.dataset.mode as HarmonyMode;
+        render();
+      });
+    });
+    copyAll.addEventListener("click", async () => {
+      if (await copyText(current.map((c) => c.toUpperCase()).join(", "))) {
+        flashCopied(copyAll, "Copied all!");
+      }
+    });
+
+    render();
+  }
+</script>

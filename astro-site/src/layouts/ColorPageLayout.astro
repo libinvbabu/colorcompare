@@ -1,0 +1,214 @@
+---
+import Container from "../components/common/Container.astro";
+import Breadcrumbs from "../components/common/Breadcrumbs.astro";
+import Faq from "../components/common/Faq.astro";
+import AdSlot from "../components/ads/AdSlot.astro";
+import RelatedTools from "../components/tools/RelatedTools.astro";
+import { getColorPage, type ColorPage } from "../data/colors";
+import { readableTextColor, hexToRgb } from "../utils/color";
+
+interface Props {
+  page: ColorPage;
+}
+const { page } = Astro.props;
+const related = page.relatedColors
+  .map((s) => getColorPage(s))
+  .filter(Boolean) as ColorPage[];
+
+const textOn = (hex: string) => {
+  const rgb = hexToRgb(hex);
+  return rgb ? readableTextColor(rgb) : "#000";
+};
+---
+
+<Breadcrumbs
+  crumbs={[
+    { name: "Home", path: "/" },
+    { name: "Palettes", path: "/colors/" },
+    { name: page.title, path: `/colors/${page.slug}/` },
+  ]}
+/>
+
+<article>
+  <header class="color-hero" style={`--accent:${page.accent}`}>
+    <Container>
+      <div class="color-hero__inner">
+        <h1>{page.title}</h1>
+        <p>{page.heroSubtitle}</p>
+      </div>
+    </Container>
+  </header>
+
+  <Container>
+    <div class="cc-prose color-intro">
+      {page.intro.map((p) => <p>{p}</p>)}
+    </div>
+
+    <section class="palettes" data-copy-root>
+      {
+        page.palettes.map((palette) => (
+          <div class="palette">
+            <div class="palette__head">
+              <div>
+                <h2 class="palette__name">{palette.name}</h2>
+                {palette.useCase && <p class="palette__use">{palette.useCase}</p>}
+              </div>
+              <button type="button" class="cc-copy" data-copy-all={palette.colors.join(", ")}>
+                Copy all
+              </button>
+            </div>
+            <div class="palette__swatches">
+              {palette.colors.map((c) => (
+                <button
+                  type="button"
+                  class="palette__swatch"
+                  data-copy={c}
+                  style={`background:${c};color:${textOn(c)}`}
+                  aria-label={`Copy ${c.toUpperCase()}`}
+                >
+                  <span class="cc-mono">{c.toUpperCase()}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+    </section>
+
+    <AdSlot slot="" format="horizontal" />
+
+    <div class="cc-prose color-body">
+      <h2>Best use cases</h2>
+      <ul>{page.bestUseCases.map((u) => <li>{u}</li>)}</ul>
+
+      <h2>Design tips</h2>
+      <ul>{page.designTips.map((t) => <li>{t}</li>)}</ul>
+    </div>
+
+    <div class="color-faq">
+      <Faq faqs={page.faqs} />
+    </div>
+
+    {
+      related.length > 0 && (
+        <section class="color-related">
+          <h2>Related palettes</h2>
+          <div class="color-related__grid">
+            {related.map((r) => (
+              <a class="color-related__card" href={`/colors/${r.slug}/`}>
+                <span class="color-related__swatches" aria-hidden="true">
+                  {r.palettes[0].colors.slice(0, 5).map((c) => (
+                    <span style={`background:${c}`} />
+                  ))}
+                </span>
+                <span class="color-related__label">{r.title}</span>
+              </a>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    <div class="color-tools">
+      <RelatedTools slugs={page.relatedTools} title="Try these tools" />
+    </div>
+  </Container>
+</article>
+
+<style>
+  .color-hero {
+    padding: clamp(2.5rem, 7vw, 4.5rem) 0 clamp(2rem, 5vw, 3rem);
+    background: var(--accent);
+    color: #fff;
+    margin-bottom: 2.5rem;
+  }
+  .color-hero__inner { max-width: 44rem; }
+  .color-hero h1 {
+    font-size: clamp(2.1rem, 6vw, 3.2rem);
+    color: #fff;
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.18);
+  }
+  .color-hero p {
+    margin-top: 0.9rem;
+    font-size: clamp(1.02rem, 2.4vw, 1.2rem);
+    color: rgba(255, 255, 255, 0.92);
+    max-width: 38rem;
+  }
+  .color-intro { max-width: var(--cc-container-narrow); }
+  .palettes { display: grid; gap: 1.5rem; margin: 2.5rem 0; }
+  .palette {
+    background: var(--cc-surface);
+    border: 1px solid var(--cc-border);
+    border-radius: var(--cc-radius-lg);
+    box-shadow: var(--cc-shadow-soft);
+    padding: 1.25rem;
+  }
+  .palette__head {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 1rem; margin-bottom: 1rem;
+  }
+  .palette__name { font-size: 1.15rem; }
+  .palette__use { color: var(--cc-muted); font-size: 0.9rem; margin-top: 0.2rem; }
+  .palette__swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    gap: 0.5rem;
+  }
+  .palette__swatch {
+    border: 1px solid var(--cc-border);
+    border-radius: var(--cc-radius-md);
+    min-height: 96px;
+    display: flex;
+    align-items: flex-end;
+    padding: 0.6rem;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+  }
+  .palette__swatch:hover { transform: translateY(-3px); box-shadow: var(--cc-shadow-soft); }
+  .palette__swatch span { font-size: 0.78rem; font-weight: 700; }
+  .color-body { max-width: var(--cc-container-narrow); margin-top: 2rem; }
+  .color-faq { max-width: var(--cc-container-narrow); margin-top: 3rem; }
+  .color-related { margin-top: 3rem; }
+  .color-related h2 { font-size: clamp(1.4rem, 3.5vw, 1.9rem); margin-bottom: 1.25rem; }
+  .color-related__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  .color-related__card {
+    border: 1px solid var(--cc-border);
+    border-radius: var(--cc-radius-md);
+    overflow: hidden;
+    background: var(--cc-surface);
+    box-shadow: var(--cc-shadow-soft);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .color-related__card:hover { transform: translateY(-3px); box-shadow: var(--cc-shadow-hover); }
+  .color-related__swatches { display: grid; grid-template-columns: repeat(5, 1fr); height: 56px; }
+  .color-related__swatches span { display: block; }
+  .color-related__label { display: block; padding: 0.7rem 0.85rem; font-weight: 600; font-size: 0.92rem; }
+  .color-tools { margin-top: 3rem; }
+  @media (min-width: 760px) {
+    .color-related__grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+
+<script>
+  import { copyText, flashCopied } from "../scripts/clipboard";
+
+  document.querySelectorAll<HTMLElement>("[data-copy-root]").forEach((root) => {
+    root.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        if (await copyText(btn.dataset.copy!)) {
+          const span = btn.querySelector("span");
+          if (span) flashCopied(span, "Copied!");
+        }
+      });
+    });
+    root.querySelectorAll<HTMLButtonElement>("[data-copy-all]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        if (await copyText(btn.dataset.copyAll!.toUpperCase())) flashCopied(btn, "Copied all!");
+      });
+    });
+  });
+</script>

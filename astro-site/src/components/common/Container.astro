@@ -1,0 +1,30 @@
+---
+interface Props {
+  /** narrow = reading width, default = full content width */
+  width?: "default" | "narrow";
+  as?: string;
+  class?: string;
+}
+
+const { width = "default", as = "div", class: className = "" } = Astro.props;
+const Tag = as as any;
+const maxW = width === "narrow" ? "var(--cc-container-narrow)" : "var(--cc-container)";
+---
+
+<Tag class={`cc-container ${className}`} style={`--max:${maxW}`}>
+  <slot />
+</Tag>
+
+<style>
+  .cc-container {
+    width: 100%;
+    max-width: var(--max);
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 768px) {
+    .cc-container {
+      padding-inline: 2rem;
+    }
+  }
+</style>

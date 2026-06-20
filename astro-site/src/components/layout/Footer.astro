@@ -1,0 +1,129 @@
+---
+import Container from "../common/Container.astro";
+import { footerColumns } from "../../data/nav";
+import { SITE } from "../../utils/seo";
+
+const year = 2026;
+---
+
+<footer class="cc-footer">
+  <Container>
+    <div class="cc-footer__top">
+      <div class="cc-footer__brand">
+        <a href="/" class="cc-footer__logo">Color<span>Compare</span></a>
+        <p class="cc-footer__tagline">
+          Free, fast color tools for designers, developers, and creators —
+          compare colors, build palettes, check accessibility, and convert formats.
+        </p>
+      </div>
+
+      <div class="cc-footer__cols">
+        {
+          footerColumns.map((col) => (
+            <nav class="cc-footer__col" aria-label={col.title}>
+              <h3 class="cc-footer__heading">{col.title}</h3>
+              <ul>
+                {col.links.map((link) => (
+                  <li>
+                    <a href={link.href}>{link.label}</a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="cc-footer__bottom">
+      <p>© {year} {SITE.name}. All rights reserved.</p>
+      <p class="cc-footer__note">
+        Free color tools · No signup required · Made for designers & developers
+      </p>
+    </div>
+  </Container>
+</footer>
+
+<style>
+  .cc-footer {
+    margin-top: 4rem;
+    padding-block: 3rem 2rem;
+    background: var(--cc-surface);
+    border-top: 1px solid var(--cc-border);
+  }
+  .cc-footer__top {
+    display: grid;
+    gap: 2.5rem;
+  }
+  .cc-footer__logo {
+    font-size: 1.3rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .cc-footer__logo span {
+    color: var(--cc-primary);
+  }
+  .cc-footer__tagline {
+    margin-top: 0.75rem;
+    color: var(--cc-muted);
+    font-size: 0.95rem;
+    max-width: 24rem;
+  }
+  .cc-footer__cols {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem 1rem;
+  }
+  .cc-footer__heading {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--cc-text);
+    margin-bottom: 0.9rem;
+  }
+  .cc-footer__col ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .cc-footer__col a {
+    color: var(--cc-muted);
+    font-size: 0.92rem;
+    transition: color 0.15s ease;
+  }
+  .cc-footer__col a:hover {
+    color: var(--cc-primary-dark);
+  }
+  .cc-footer__bottom {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--cc-border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    color: var(--cc-faint);
+    font-size: 0.85rem;
+  }
+  .cc-footer__note {
+    color: var(--cc-faint);
+  }
+
+  @media (min-width: 720px) {
+    .cc-footer__cols {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  @media (min-width: 960px) {
+    .cc-footer__top {
+      grid-template-columns: 1.2fr 2.5fr;
+      gap: 3rem;
+    }
+    .cc-footer__bottom {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+  }
+</style>

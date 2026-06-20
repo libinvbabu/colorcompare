@@ -1,0 +1,58 @@
+---
+interface Props {
+  slot?: string;
+  format?: "auto" | "fluid" | "rectangle" | "horizontal";
+  className?: string;
+  label?: string;
+}
+
+const {
+  slot,
+  format = "auto",
+  className = "",
+  label = "Advertisement",
+} = Astro.props;
+
+const enabled = import.meta.env.PUBLIC_ADSENSE_ENABLED === "true";
+const clientId = import.meta.env.PUBLIC_ADSENSE_CLIENT_ID;
+const show = enabled && clientId && slot;
+---
+
+{
+  show && (
+    <aside class={`ad-wrapper ${className}`} aria-label={label}>
+      <span class="ad-label">{label}</span>
+      <ins
+        class="adsbygoogle"
+        style="display:block"
+        data-ad-client={clientId}
+        data-ad-slot={slot}
+        data-ad-format={format}
+        data-full-width-responsive="true"
+      />
+      <script is:inline>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </aside>
+  )
+}
+
+<style>
+  .ad-wrapper {
+    margin: 2.5rem auto;
+    /* Reserve space to minimize layout shift when ads load. */
+    min-height: 100px;
+    max-width: 728px;
+    border-radius: var(--cc-radius-md);
+    overflow: hidden;
+  }
+  .ad-label {
+    display: block;
+    margin-bottom: 0.4rem;
+    color: var(--cc-faint);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+</style>

@@ -1,0 +1,88 @@
+---
+import BaseLayout from "../components/layout/BaseLayout.astro";
+import Container from "../components/common/Container.astro";
+import Breadcrumbs from "../components/common/Breadcrumbs.astro";
+import { breadcrumbSchema } from "../utils/schema";
+
+const title = "Terms of Use";
+const description =
+  "The terms and conditions for using ColorCompare's free color tools and resources.";
+const updated = "June 19, 2026";
+const schemas = [
+  breadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Terms", path: "/terms/" },
+  ]),
+];
+---
+
+<BaseLayout title={title} description={description} canonical="/terms/" schemas={schemas}>
+  <Breadcrumbs crumbs={[{ name: "Home", path: "/" }, { name: "Terms", path: "/terms/" }]} />
+  <Container width="narrow">
+    <div class="cc-prose static-page">
+      <h1>Terms of Use</h1>
+      <p class="static-page__updated">Last updated: {updated}</p>
+
+      <p>
+        By accessing or using ColorCompare (“the site”), you agree to these Terms
+        of Use. If you do not agree, please do not use the site.
+      </p>
+
+      <h2>Use of the tools</h2>
+      <p>
+        ColorCompare provides free color tools and resources for personal and
+        commercial use. Colors and HEX values are not subject to copyright, so
+        palettes you create with our tools are free for you to use in your own
+        projects.
+      </p>
+
+      <h2>No warranty</h2>
+      <p>
+        The site and its tools are provided “as is” without warranties of any
+        kind. While we strive for accuracy, color conversions — particularly
+        screen-to-print CMYK conversions and color-blindness simulations — are
+        approximations and should be verified for color-critical work. We do not
+        guarantee that the site will be error-free or uninterrupted.
+      </p>
+
+      <h2>Limitation of liability</h2>
+      <p>
+        To the fullest extent permitted by law, ColorCompare is not liable for any
+        damages arising from your use of, or inability to use, the site or its
+        tools, including decisions made based on tool outputs.
+      </p>
+
+      <h2>Third-party content and advertising</h2>
+      <p>
+        The site displays third-party advertising and may link to external
+        websites. We are not responsible for the content, policies, or practices
+        of third parties. Your interactions with advertisers are solely between
+        you and them.
+      </p>
+
+      <h2>Intellectual property</h2>
+      <p>
+        The ColorCompare name, design, and original content are the property of
+        ColorCompare. You may not reproduce or redistribute the site’s content as
+        your own, though you are welcome to link to it.
+      </p>
+
+      <h2>Changes to these terms</h2>
+      <p>
+        We may update these Terms from time to time. Continued use of the site
+        after changes constitutes acceptance of the revised Terms.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        Questions about these Terms? Visit our <a href="/contact/">contact page</a>.
+      </p>
+    </div>
+  </Container>
+</BaseLayout>
+
+<style>
+  .static-page { margin: 1.5rem 0 1rem; }
+  .static-page h1 { font-size: clamp(2rem, 5.5vw, 3rem); }
+  .static-page__updated { color: var(--cc-faint); font-size: 0.9rem; }
+</style>

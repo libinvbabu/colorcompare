@@ -1,0 +1,237 @@
+---
+// Color Compare — compare 2–5 colors side by side with HEX/RGB/HSL + contrast.
+---
+
+<div class="cc-tool" data-compare>
+  <div class="compare__head">
+    <p class="compare__hint">Add 2–5 colors to compare them side by side.</p>
+    <div class="compare__actions">
+      <button type="button" class="cc-copy" data-add>+ Add color</button>
+    </div>
+  </div>
+
+  <div class="compare__grid" data-grid role="list"></div>
+
+  <div class="compare__contrast" data-contrast hidden>
+    <h3 class="compare__contrast-title">Contrast between</h3>
+    <div class="compare__contrast-controls">
+      <label class="cc-visually-hidden" for="cmp-a">First color</label>
+      <select class="cc-select" id="cmp-a" data-pair-a></select>
+      <label class="cc-visually-hidden" for="cmp-b">Second color</label>
+      <select class="cc-select" id="cmp-b" data-pair-b></select>
+    </div>
+    <div class="compare__contrast-result">
+      <strong class="cc-mono" data-ratio>—</strong>
+      <span class="cc-judge" data-judge></span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .compare__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  .compare__hint { color: var(--cc-muted); font-size: 0.9rem; }
+  .compare__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .compare__contrast {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--cc-border);
+  }
+  .compare__contrast-title { font-size: 1rem; margin-bottom: 0.75rem; }
+  .compare__contrast-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    max-width: 26rem;
+  }
+  .compare__contrast-result {
+    margin-top: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .compare__contrast-result strong { font-size: 1.5rem; }
+  @media (min-width: 640px) {
+    .compare__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 900px) {
+    .compare__grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+
+<script>
+  import {
+    normalizeHex,
+    hexToRgb,
+    rgbToHsl,
+    formatRgb,
+    formatHsl,
+    readableTextColor,
+    evaluateWcag,
+  } from "../../utils/color";
+  import { copyText, flashCopied } from "../../scripts/clipboard";
+
+  const root = document.querySelector<HTMLElement>("[data-compare]");
+  if (root) {
+    const grid = root.querySelector<HTMLElement>("[data-grid]")!;
+    const addBtn = root.querySelector<HTMLButtonElement>("[data-add]")!;
+    const contrastBox = root.querySelector<HTMLElement>("[data-contrast]")!;
+    const selA = root.querySelector<HTMLSelectElement>("[data-pair-a]")!;
+    const selB = root.querySelector<HTMLSelectElement>("[data-pair-b]")!;
+    const ratioEl = root.querySelector<HTMLElement>("[data-ratio]")!;
+    const judgeEl = root.querySelector<HTMLElement>("[data-judge]")!;
+
+    let colors = ["#6d5dfc", "#ff4fa3"];
+
+    function render() {
+      grid.innerHTML = "";
+      colors.forEach((hex, i) => {
+        const rgb = hexToRgb(hex)!;
+        const hsl = rgbToHsl(rgb);
+        const text = readableTextColor(rgb);
+        const card = document.createElement("div");
+        card.className = "ccard";
+        card.setAttribute("role", "listitem");
+        card.innerHTML = `
+          <div class="ccard__swatch" style="background:${hex};color:${text}">
+            <span class="cc-mono">${hex.toUpperCase()}</span>
+            ${colors.length > 2 ? `<button type="button" class="ccard__remove" aria-label="Remove color" data-remove="${i}">✕</button>` : ""}
+          </div>
+          <div class="cc-colorinput">
+            <input type="color" value="${hex}" aria-label="Pick color ${i + 1}" data-picker="${i}" />
+            <input type="text" value="${hex.toUpperCase()}" aria-label="Hex value ${i + 1}" data-hex="${i}" />
+          </div>
+          <div class="cc-values">
+            <div class="cc-value"><span class="cc-value__label">RGB</span><span class="cc-value__val">${formatRgb(rgb)}</span><button class="cc-copy" data-copy="${formatRgb(rgb)}">Copy</button></div>
+            <div class="cc-value"><span class="cc-value__label">HSL</span><span class="cc-value__val">${formatHsl(hsl)}</span><button class="cc-copy" data-copy="${formatHsl(hsl)}">Copy</button></div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+      wireCards();
+      renderSelects();
+      updateContrast();
+      addBtn.disabled = colors.length >= 5;
+      addBtn.style.opacity = colors.length >= 5 ? "0.5" : "1";
+    }
+
+    function wireCards() {
+      grid.querySelectorAll<HTMLInputElement>("[data-hex]").forEach((input) => {
+        input.addEventListener("input", () => {
+          const idx = Number(input.dataset.hex);
+          const norm = normalizeHex(input.value);
+          const wrap = input.closest(".cc-colorinput");
+          if (norm) {
+            wrap?.removeAttribute("data-invalid");
+            colors[idx] = norm;
+            render();
+            const next = grid.querySelectorAll<HTMLInputElement>("[data-hex]")[idx];
+            next?.focus();
+          } else {
+            wrap?.setAttribute("data-invalid", "");
+          }
+        });
+      });
+      grid.querySelectorAll<HTMLInputElement>("[data-picker]").forEach((input) => {
+        input.addEventListener("input", () => {
+          colors[Number(input.dataset.picker)] = input.value;
+          render();
+        });
+      });
+      grid.querySelectorAll<HTMLButtonElement>("[data-remove]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          colors.splice(Number(btn.dataset.remove), 1);
+          render();
+        });
+      });
+      grid.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          if (await copyText(btn.dataset.copy!)) flashCopied(btn);
+        });
+      });
+    }
+
+    function renderSelects() {
+      const opts = colors
+        .map((c, i) => `<option value="${i}">Color ${i + 1} — ${c.toUpperCase()}</option>`)
+        .join("");
+      const a = Math.min(Number(selA.value) || 0, colors.length - 1);
+      const b = Math.min(Number(selB.value) || 1, colors.length - 1);
+      selA.innerHTML = opts;
+      selB.innerHTML = opts;
+      selA.value = String(a);
+      selB.value = String(b === a ? (a + 1) % colors.length : b);
+    }
+
+    function updateContrast() {
+      contrastBox.hidden = colors.length < 2;
+      const a = hexToRgb(colors[Number(selA.value)] || colors[0])!;
+      const b = hexToRgb(colors[Number(selB.value)] || colors[1])!;
+      const res = evaluateWcag(a, b);
+      ratioEl.textContent = res.ratioLabel;
+      judgeEl.textContent = res.aaNormal ? "AA ✓" : res.aaLarge ? "AA Large only" : "Fails AA";
+      judgeEl.className = `cc-judge ${res.aaNormal ? "cc-judge--pass" : res.aaLarge ? "cc-judge--warn" : "cc-judge--fail"}`;
+    }
+
+    addBtn.addEventListener("click", () => {
+      if (colors.length < 5) {
+        colors.push("#16c8f3");
+        render();
+      }
+    });
+    selA.addEventListener("change", updateContrast);
+    selB.addEventListener("change", updateContrast);
+
+    render();
+  }
+</script>
+
+<style is:global>
+  [data-compare] .ccard {
+    border: 1px solid var(--cc-border);
+    border-radius: var(--cc-radius-md);
+    overflow: hidden;
+    background: var(--cc-surface);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding-bottom: 0.6rem;
+  }
+  [data-compare] .ccard__swatch {
+    position: relative;
+    min-height: 90px;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+  [data-compare] .ccard__remove {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.85);
+    color: #111;
+    cursor: pointer;
+    font-size: 0.75rem;
+    display: grid;
+    place-items: center;
+  }
+  [data-compare] .ccard .cc-colorinput,
+  [data-compare] .ccard .cc-values {
+    margin-inline: 0.6rem;
+  }
+</style>

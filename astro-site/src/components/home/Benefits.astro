@@ -1,0 +1,89 @@
+---
+import Container from "../common/Container.astro";
+import SectionHeader from "../common/SectionHeader.astro";
+
+const benefits = [
+  {
+    icon: "⚡",
+    title: "Fast enough for daily design work",
+    text: "Every tool runs instantly in your browser — no loading screens, no waiting, no accounts to set up.",
+  },
+  {
+    icon: "♿",
+    title: "Built for accessibility checks",
+    text: "WCAG contrast ratios and color-blindness previews are built in, so inclusive design is part of the workflow.",
+  },
+  {
+    icon: "🧩",
+    title: "Useful for design and development",
+    text: "Copy HEX, RGB, HSL, CMYK, or ready-to-paste CSS — whatever your stage of the project needs.",
+  },
+  {
+    icon: "🔎",
+    title: "Organized for discovery and learning",
+    text: "Curated palettes and clear guides help you not just pick colors, but understand why they work.",
+  },
+];
+---
+
+<section class="cc-section" id="why">
+  <Container>
+    <SectionHeader
+      eyebrow="Why ColorCompare"
+      title="Why people use ColorCompare"
+      subtitle="A focused set of color tools that respect your time, your users, and your craft."
+    />
+
+    <div class="benefits">
+      {
+        benefits.map((b) => (
+          <div class="benefit">
+            <span class="benefit__icon" aria-hidden="true">{b.icon}</span>
+            <h3 class="benefit__title">{b.title}</h3>
+            <p class="benefit__text">{b.text}</p>
+          </div>
+        ))
+      }
+    </div>
+  </Container>
+</section>
+
+<style>
+  .benefits {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .benefit {
+    padding: 1.5rem;
+    background: var(--cc-surface);
+    border: 1px solid var(--cc-border);
+    border-radius: var(--cc-radius-lg);
+    box-shadow: var(--cc-shadow-soft);
+  }
+  .benefit__icon {
+    display: inline-grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    font-size: 1.5rem;
+    background: var(--cc-surface-soft);
+    margin-bottom: 0.9rem;
+  }
+  .benefit__title {
+    font-size: 1.08rem;
+    margin-bottom: 0.4rem;
+  }
+  .benefit__text {
+    font-size: 0.92rem;
+    color: var(--cc-muted);
+  }
+
+  @media (min-width: 640px) {
+    .benefits { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1040px) {
+    .benefits { grid-template-columns: repeat(4, 1fr); }
+  }
+</style>

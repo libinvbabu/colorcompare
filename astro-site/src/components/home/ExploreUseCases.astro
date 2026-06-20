@@ -1,0 +1,98 @@
+---
+import Container from "../common/Container.astro";
+import SectionHeader from "../common/SectionHeader.astro";
+import { colorPages } from "../../data/colors";
+---
+
+<section class="cc-section" id="palettes">
+  <Container>
+    <SectionHeader
+      eyebrow="Inspiration"
+      title="Explore by color & use case"
+      subtitle="Curated palettes and color ideas for websites, brands, logos, weddings, and more — each with copyable HEX codes."
+    />
+
+    <div class="explore-grid">
+      {
+        colorPages.map((page) => (
+          <a class="explore-card" href={`/colors/${page.slug}/`}>
+            <span class="explore-card__swatches" aria-hidden="true">
+              {page.palettes[0].colors.slice(0, 5).map((c) => (
+                <span style={`background:${c}`} />
+              ))}
+            </span>
+            <span class="explore-card__body">
+              <strong>{page.title}</strong>
+              <span>{page.description}</span>
+            </span>
+          </a>
+        ))
+      }
+    </div>
+
+    <div class="explore-all">
+      <a href="/colors/" class="explore-all__link">Browse all palettes →</a>
+    </div>
+  </Container>
+</section>
+
+<style>
+  .explore-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .explore-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--cc-surface);
+    border: 1px solid var(--cc-border);
+    border-radius: var(--cc-radius-lg);
+    box-shadow: var(--cc-shadow-soft);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.25s ease;
+  }
+  .explore-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--cc-shadow-hover);
+  }
+  .explore-card__swatches {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    height: 76px;
+  }
+  .explore-card__swatches span {
+    display: block;
+  }
+  .explore-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 1rem 1.1rem 1.2rem;
+  }
+  .explore-card__body strong {
+    font-size: 1.02rem;
+  }
+  .explore-card__body span {
+    font-size: 0.88rem;
+    color: var(--cc-muted);
+  }
+  .explore-all {
+    margin-top: 1.75rem;
+    text-align: center;
+  }
+  .explore-all__link {
+    font-weight: 600;
+    color: var(--cc-primary-dark);
+  }
+  .explore-all__link:hover {
+    text-decoration: underline;
+  }
+
+  @media (min-width: 640px) {
+    .explore-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 980px) {
+    .explore-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+</style>

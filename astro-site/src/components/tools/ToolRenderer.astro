@@ -1,0 +1,30 @@
+---
+// Maps a tool slug to its interactive island. Only the matching island's
+// script is bundled onto each tool page.
+import ColorCompareTool from "./ColorCompareTool.astro";
+import ContrastCheckerTool from "./ContrastCheckerTool.astro";
+import PaletteGeneratorTool from "./PaletteGeneratorTool.astro";
+import ConverterTool from "./ConverterTool.astro";
+import GradientGeneratorTool from "./GradientGeneratorTool.astro";
+import ImageColorPickerTool from "./ImageColorPickerTool.astro";
+import ColorBlindnessSimulatorTool from "./ColorBlindnessSimulatorTool.astro";
+import ShadesTintsTool from "./ShadesTintsTool.astro";
+import CssColorPreviewTool from "./CssColorPreviewTool.astro";
+
+interface Props {
+  slug: string;
+}
+const { slug } = Astro.props;
+---
+
+{slug === "color-compare" && <ColorCompareTool />}
+{slug === "contrast-checker" && <ContrastCheckerTool />}
+{slug === "palette-generator" && <PaletteGeneratorTool />}
+{slug === "hex-to-rgb" && <ConverterTool mode="hex-to-rgb" />}
+{slug === "rgb-to-hex" && <ConverterTool mode="rgb-to-hex" />}
+{slug === "cmyk-converter" && <ConverterTool mode="cmyk-converter" />}
+{slug === "gradient-generator" && <GradientGeneratorTool />}
+{slug === "image-color-picker" && <ImageColorPickerTool />}
+{slug === "color-blindness-simulator" && <ColorBlindnessSimulatorTool />}
+{slug === "shades-and-tints-generator" && <ShadesTintsTool />}
+{slug === "css-color-preview" && <CssColorPreviewTool />}

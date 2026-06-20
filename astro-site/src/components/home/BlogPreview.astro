@@ -1,0 +1,111 @@
+---
+import { getCollection } from "astro:content";
+import Container from "../common/Container.astro";
+import SectionHeader from "../common/SectionHeader.astro";
+
+const posts = (await getCollection("blog"))
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+  .slice(0, 4);
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+---
+
+{
+  posts.length > 0 && (
+    <section class="cc-section" id="blog">
+      <Container>
+        <SectionHeader
+          eyebrow="Learn"
+          title="From the blog"
+          subtitle="Practical guides on color theory, accessible UI, and building palettes that work."
+        />
+
+        <div class="blog-grid">
+          {posts.map((post) => (
+            <a class="blog-card" href={`/blog/${post.id}/`}>
+              <span
+                class="blog-card__cover"
+                style={`background:linear-gradient(135deg, ${post.data.cover[0]}, ${post.data.cover[1]})`}
+                aria-hidden="true"
+              />
+              <span class="blog-card__body">
+                <span class="blog-card__date">{fmt(post.data.pubDate)}</span>
+                <strong class="blog-card__title">{post.data.title}</strong>
+                <span class="blog-card__desc">{post.data.description}</span>
+              </span>
+            </a>
+          ))}
+        </div>
+
+        <div class="blog-all">
+          <a href="/blog/" class="blog-all__link">Read the blog →</a>
+        </div>
+      </Container>
+    </section>
+  )
+}
+
+<style>
+  .blog-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .blog-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--cc-surface);
+    border: 1px solid var(--cc-border);
+    border-radius: var(--cc-radius-lg);
+    box-shadow: var(--cc-shadow-soft);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.25s ease;
+  }
+  .blog-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--cc-shadow-hover);
+  }
+  .blog-card__cover {
+    height: 120px;
+  }
+  .blog-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 1rem 1.1rem 1.2rem;
+  }
+  .blog-card__date {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--cc-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .blog-card__title {
+    font-size: 1.02rem;
+    line-height: 1.3;
+  }
+  .blog-card__desc {
+    font-size: 0.88rem;
+    color: var(--cc-muted);
+  }
+  .blog-all {
+    margin-top: 1.75rem;
+    text-align: center;
+  }
+  .blog-all__link {
+    font-weight: 600;
+    color: var(--cc-primary-dark);
+  }
+  .blog-all__link:hover {
+    text-decoration: underline;
+  }
+
+  @media (min-width: 640px) {
+    .blog-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 980px) {
+    .blog-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+</style>

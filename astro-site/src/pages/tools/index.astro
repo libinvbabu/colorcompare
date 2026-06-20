@@ -1,0 +1,106 @@
+---
+import BaseLayout from "../../components/layout/BaseLayout.astro";
+import Container from "../../components/common/Container.astro";
+import Breadcrumbs from "../../components/common/Breadcrumbs.astro";
+import AdSlot from "../../components/ads/AdSlot.astro";
+import { tools, toolCategories } from "../../data/tools";
+import { breadcrumbSchema } from "../../utils/schema";
+
+const title = "All Color Tools — Compare, Convert, Generate & Check Colors";
+const description =
+  "The complete set of free ColorCompare tools: compare colors, check WCAG contrast, generate palettes and gradients, convert HEX/RGB/HSL/CMYK, extract colors from images, and more.";
+
+const grouped = toolCategories
+  .map((cat) => ({ cat, items: tools.filter((t) => t.category === cat) }))
+  .filter((g) => g.items.length > 0);
+
+const schemas = [
+  breadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Tools", path: "/tools/" },
+  ]),
+];
+---
+
+<BaseLayout title={title} description={description} canonical="/tools/" schemas={schemas}>
+  <Breadcrumbs crumbs={[{ name: "Home", path: "/" }, { name: "Tools", path: "/tools/" }]} />
+
+  <Container>
+    <header class="tools-index__hero">
+      <h1>All color tools</h1>
+      <p>
+        Every ColorCompare tool is free, works instantly in your browser, and
+        requires no signup. Pick a tool to get started.
+      </p>
+    </header>
+
+    {
+      grouped.map((group) => (
+        <section class="tools-index__group">
+          <h2 class="tools-index__cat">{group.cat}</h2>
+          <div class="tools-index__grid">
+            {group.items.map((tool) => (
+              <a class="ti-card" href={`/tools/${tool.slug}/`} style={`--accent:${tool.accent}`}>
+                <span class="ti-card__icon" aria-hidden="true">{tool.icon}</span>
+                <h3>{tool.title}</h3>
+                <p>{tool.description}</p>
+              </a>
+            ))}
+          </div>
+        </section>
+      ))
+    }
+
+    <AdSlot slot="" format="horizontal" />
+  </Container>
+</BaseLayout>
+
+<style>
+  .tools-index__hero {
+    max-width: 42rem;
+    margin: 1.5rem 0 2.5rem;
+  }
+  .tools-index__hero h1 { font-size: clamp(2rem, 5.5vw, 3rem); margin-bottom: 0.75rem; }
+  .tools-index__hero p { color: var(--cc-muted); font-size: 1.1rem; }
+  .tools-index__group { margin-bottom: 2.5rem; }
+  .tools-index__cat {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--cc-primary);
+    margin-bottom: 1rem;
+  }
+  .tools-index__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .ti-card {
+    position: relative;
+    padding: 1.4rem;
+    background: var(--cc-surface);
+    border: 1px solid var(--cc-border);
+    border-radius: var(--cc-radius-lg);
+    box-shadow: var(--cc-shadow-soft);
+    transition: transform 0.2s ease, box-shadow 0.25s ease, border-color 0.2s ease;
+  }
+  .ti-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--cc-shadow-hover);
+    border-color: color-mix(in srgb, var(--accent) 35%, var(--cc-border));
+  }
+  .ti-card__icon {
+    display: grid; place-items: center;
+    width: 46px; height: 46px; border-radius: 12px; font-size: 1.4rem;
+    background: color-mix(in srgb, var(--accent) 14%, var(--cc-surface));
+    margin-bottom: 0.75rem;
+  }
+  .ti-card h3 { font-size: 1.08rem; margin-bottom: 0.3rem; }
+  .ti-card p { color: var(--cc-muted); font-size: 0.92rem; }
+  @media (min-width: 640px) {
+    .tools-index__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 980px) {
+    .tools-index__grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>

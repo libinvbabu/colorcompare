@@ -1,0 +1,35 @@
+---
+import BaseLayout from "../../components/layout/BaseLayout.astro";
+import ColorPageLayout from "../../layouts/ColorPageLayout.astro";
+import { colorPages, getColorPage } from "../../data/colors";
+import { breadcrumbSchema, faqSchema } from "../../utils/schema";
+
+export function getStaticPaths() {
+  return colorPages.map((page) => ({
+    params: { slug: page.slug },
+    props: { slug: page.slug },
+  }));
+}
+
+const { slug } = Astro.props;
+const page = getColorPage(slug)!;
+const path = `/colors/${page.slug}/`;
+
+const schemas = [
+  breadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Palettes", path: "/colors/" },
+    { name: page.title, path },
+  ]),
+  ...(page.faqs.length ? [faqSchema(page.faqs)] : []),
+];
+---
+
+<BaseLayout
+  title={page.seoTitle}
+  description={page.seoDescription}
+  canonical={path}
+  schemas={schemas}
+>
+  <ColorPageLayout page={page} />
+</BaseLayout>

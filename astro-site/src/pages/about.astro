@@ -1,0 +1,68 @@
+---
+import BaseLayout from "../components/layout/BaseLayout.astro";
+import Container from "../components/common/Container.astro";
+import Breadcrumbs from "../components/common/Breadcrumbs.astro";
+import { breadcrumbSchema } from "../utils/schema";
+
+const title = "About ColorCompare";
+const description =
+  "ColorCompare is a free collection of color tools and resources for designers, developers, students, marketers, and creators.";
+const schemas = [
+  breadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "About", path: "/about/" },
+  ]),
+];
+---
+
+<BaseLayout title={title} description={description} canonical="/about/" schemas={schemas}>
+  <Breadcrumbs crumbs={[{ name: "Home", path: "/" }, { name: "About", path: "/about/" }]} />
+  <Container width="narrow">
+    <div class="cc-prose static-page">
+      <h1>About ColorCompare</h1>
+      <p>
+        ColorCompare is a free collection of color tools and resources for
+        designers, developers, students, marketers, and creators. Our goal is
+        simple: make working with color fast, accessible, and a little more
+        delightful — without signups, paywalls, or clutter.
+      </p>
+
+      <h2>What you can do here</h2>
+      <ul>
+        <li>Compare colors side by side with HEX, RGB, and HSL values.</li>
+        <li>Check WCAG contrast ratios for accessible text and UI.</li>
+        <li>Generate harmonious palettes, gradients, shades, and tints.</li>
+        <li>Convert between HEX, RGB, HSL, and CMYK.</li>
+        <li>Extract colors from images entirely in your browser.</li>
+        <li>Preview designs for different types of color blindness.</li>
+        <li>Explore curated palettes for websites, brands, logos, and more.</li>
+      </ul>
+
+      <h2>Our principles</h2>
+      <ul>
+        <li><strong>Free and open.</strong> Every tool is free to use, with no account required.</li>
+        <li><strong>Privacy-friendly.</strong> Tools like the image color picker run entirely in your browser — your files are never uploaded.</li>
+        <li><strong>Accessibility-first.</strong> Accessibility checks are built in, because good color should work for everyone.</li>
+        <li><strong>Fast and lightweight.</strong> The site is built to load quickly and run instantly.</li>
+      </ul>
+
+      <h2>How we keep it free</h2>
+      <p>
+        ColorCompare is supported by unobtrusive display advertising. This lets
+        us keep all tools completely free. You can read more in our
+        <a href="/privacy-policy/">privacy policy</a>.
+      </p>
+
+      <h2>Get in touch</h2>
+      <p>
+        Have feedback, a tool request, or found a bug? We’d love to hear from
+        you on our <a href="/contact/">contact page</a>.
+      </p>
+    </div>
+  </Container>
+</BaseLayout>
+
+<style>
+  .static-page { margin: 1.5rem 0 1rem; }
+  .static-page h1 { font-size: clamp(2rem, 5.5vw, 3rem); }
+</style>

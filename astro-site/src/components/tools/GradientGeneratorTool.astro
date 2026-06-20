@@ -1,0 +1,134 @@
+---
+// Gradient Generator — multi-stop linear gradients with copyable CSS.
+const directions = [
+  { v: "90deg", l: "→ Right" },
+  { v: "180deg", l: "↓ Down" },
+  { v: "135deg", l: "↘ Diagonal" },
+  { v: "45deg", l: "↗ Diagonal" },
+  { v: "270deg", l: "← Left" },
+  { v: "0deg", l: "↑ Up" },
+];
+---
+
+<div class="cc-tool" data-gradient>
+  <div class="gg__preview" data-preview></div>
+
+  <div class="gg__controls">
+    <div class="cc-field">
+      <label class="cc-field__label" for="gg-dir">Direction</label>
+      <select class="cc-select" id="gg-dir" data-dir>
+        {directions.map((d) => <option value={d.v}>{d.l} ({d.v})</option>)}
+      </select>
+    </div>
+
+    <div class="cc-field">
+      <span class="cc-field__label">Color stops</span>
+      <div class="gg__stops" data-stops></div>
+      <button type="button" class="cc-copy gg__add" data-add>+ Add color</button>
+    </div>
+  </div>
+
+  <div class="gg__css">
+    <code class="cc-mono" data-css></code>
+    <button type="button" class="cc-copy" data-copy>Copy CSS</button>
+  </div>
+</div>
+
+<style>
+  .gg__preview {
+    height: 180px;
+    border-radius: var(--cc-radius-md);
+    border: 1px solid var(--cc-border);
+    margin-bottom: 1.25rem;
+  }
+  .gg__controls { display: grid; gap: 1.25rem; }
+  .gg__stops { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .gg__add { margin-top: 0.6rem; align-self: start; }
+  .gg__css {
+    margin-top: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    justify-content: space-between;
+    padding: 0.85rem 1rem;
+    background: var(--cc-surface-soft);
+    border: 1px solid var(--cc-border);
+    border-radius: var(--cc-radius-md);
+  }
+  .gg__css code { font-size: 0.85rem; overflow-wrap: anywhere; }
+  .gg__stop { position: relative; }
+  .gg__stop input[type="color"] {
+    width: 46px; height: 46px; border: 1px solid var(--cc-border);
+    border-radius: 12px; padding: 0; cursor: pointer; background: none;
+  }
+  .gg__stop button {
+    position: absolute; top: -6px; right: -6px;
+    width: 20px; height: 20px; border-radius: 50%; border: none;
+    background: var(--cc-text); color: #fff; font-size: 0.7rem; cursor: pointer;
+    display: grid; place-items: center;
+  }
+  @media (min-width: 720px) {
+    .gg__controls { grid-template-columns: auto 1fr; align-items: start; }
+  }
+</style>
+
+<script>
+  import { copyText, flashCopied } from "../../scripts/clipboard";
+
+  const root = document.querySelector<HTMLElement>("[data-gradient]");
+  if (root) {
+    const preview = root.querySelector<HTMLElement>("[data-preview]")!;
+    const stopsEl = root.querySelector<HTMLElement>("[data-stops]")!;
+    const dir = root.querySelector<HTMLSelectElement>("[data-dir]")!;
+    const cssEl = root.querySelector<HTMLElement>("[data-css]")!;
+    const copyBtn = root.querySelector<HTMLButtonElement>("[data-copy]")!;
+    const addBtn = root.querySelector<HTMLButtonElement>("[data-add]")!;
+
+    let stops = ["#6d5dfc", "#ff4fa3"];
+
+    function css() {
+      return `background: linear-gradient(${dir.value}, ${stops.join(", ")});`;
+    }
+    function render() {
+      stopsEl.innerHTML = stops
+        .map(
+          (c, i) =>
+            `<span class="gg__stop"><input type="color" value="${c}" aria-label="Color stop ${i + 1}" data-stop="${i}" />${stops.length > 2 ? `<button type="button" aria-label="Remove stop" data-remove="${i}">✕</button>` : ""}</span>`
+        )
+        .join("");
+      stopsEl.querySelectorAll<HTMLInputElement>("[data-stop]").forEach((inp) => {
+        inp.addEventListener("input", () => {
+          stops[Number(inp.dataset.stop)] = inp.value;
+          paint();
+        });
+      });
+      stopsEl.querySelectorAll<HTMLButtonElement>("[data-remove]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          stops.splice(Number(btn.dataset.remove), 1);
+          render();
+        });
+      });
+      addBtn.disabled = stops.length >= 5;
+      addBtn.style.opacity = stops.length >= 5 ? "0.5" : "1";
+      paint();
+    }
+    function paint() {
+      const value = css();
+      preview.style.cssText = value + `height:180px`;
+      cssEl.textContent = value;
+    }
+
+    dir.addEventListener("change", paint);
+    addBtn.addEventListener("click", () => {
+      if (stops.length < 5) {
+        stops.push("#16c8f3");
+        render();
+      }
+    });
+    copyBtn.addEventListener("click", async () => {
+      if (await copyText(css())) flashCopied(copyBtn);
+    });
+
+    render();
+  }
+</script>

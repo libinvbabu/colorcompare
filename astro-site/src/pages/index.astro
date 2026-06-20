@@ -1,0 +1,28 @@
+---
+import BaseLayout from "../components/layout/BaseLayout.astro";
+import Container from "../components/common/Container.astro";
+import Hero from "../components/home/Hero.astro";
+import PopularTools from "../components/home/PopularTools.astro";
+import ExploreUseCases from "../components/home/ExploreUseCases.astro";
+import Benefits from "../components/home/Benefits.astro";
+import BlogPreview from "../components/home/BlogPreview.astro";
+import HomeFooterCta from "../components/home/HomeFooterCta.astro";
+import AdSlot from "../components/ads/AdSlot.astro";
+import { SITE } from "../utils/seo";
+
+const title = `ColorCompare — ${SITE.tagline}`;
+---
+
+<BaseLayout title={title} description={SITE.description} canonical="/" rootSchema>
+  <Hero />
+  <PopularTools />
+  <ExploreUseCases />
+
+  <Container>
+    <AdSlot slot="" format="horizontal" label="Advertisement" />
+  </Container>
+
+  <Benefits />
+  <BlogPreview />
+  <HomeFooterCta />
+</BaseLayout>

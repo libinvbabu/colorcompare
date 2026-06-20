@@ -1,0 +1,198 @@
+---
+import { describeColor, evaluateWcag, parseColor, formatRgb } from "../../utils/color";
+
+/** Build-time accurate values so the mock shows real data, not lorem. */
+const samples = ["#6d5dfc", "#ff4fa3", "#16c8f3"].map((hex) => describeColor(hex)!);
+const pair = evaluateWcag(parseColor("#6d5dfc")!, parseColor("#ffffff")!);
+const strip = ["#6d5dfc", "#8b5cf6", "#ff4fa3", "#16c8f3", "#22c55e", "#facc15"];
+const tabs = ["Compare", "Contrast", "Convert"];
+---
+
+<div class="pv" role="img" aria-label="Preview of the ColorCompare interface showing color swatches and a contrast score">
+  <div class="pv__chrome" aria-hidden="true">
+    <span></span><span></span><span></span>
+    <p class="pv__url">colorcompare.in/tools</p>
+  </div>
+
+  <div class="pv__body">
+    <div class="pv__tabs" aria-hidden="true">
+      {tabs.map((t, i) => (
+        <span class={`pv__tab ${i === 0 ? "is-active" : ""}`}>{t}</span>
+      ))}
+    </div>
+
+    <div class="pv__cards">
+      {
+        samples.map((c) => (
+          <div class="pv__card">
+            <div class="pv__chip" style={`background:${c.hex}`} />
+            <div class="pv__meta">
+              <strong class="cc-mono">{c.hex.toUpperCase()}</strong>
+              <span class="cc-mono">{formatRgb(c.rgb)}</span>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="pv__contrast">
+      <div class="pv__contrast-demo" style="background:#fff">
+        <span style="color:#6d5dfc">Aa</span>
+      </div>
+      <div class="pv__contrast-info">
+        <p class="pv__contrast-label">Contrast vs white</p>
+        <strong class="cc-mono">{pair.ratioLabel}</strong>
+      </div>
+      <span class={`pv__pill ${pair.aaLarge ? "is-pass" : "is-fail"}`}>
+        {pair.aaLarge ? "AA Large ✓" : "Fail"}
+      </span>
+    </div>
+
+    <div class="pv__strip" aria-hidden="true">
+      {strip.map((c) => <span style={`background:${c}`} />)}
+    </div>
+  </div>
+</div>
+
+<style>
+  .pv {
+    background: var(--cc-surface);
+    border: 1px solid var(--cc-border);
+    border-radius: var(--cc-radius-lg);
+    box-shadow: var(--cc-shadow-card);
+    overflow: hidden;
+    transform: perspective(1400px) rotateY(-4deg) rotateX(2deg);
+    transition: transform 0.4s ease;
+  }
+  .pv:hover {
+    transform: perspective(1400px) rotateY(0deg) rotateX(0deg);
+  }
+  .pv__chrome {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.75rem 1rem;
+    background: var(--cc-surface-soft);
+    border-bottom: 1px solid var(--cc-border);
+  }
+  .pv__chrome > span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--cc-border-strong);
+  }
+  .pv__chrome > span:nth-child(1) { background: #ff5f57; }
+  .pv__chrome > span:nth-child(2) { background: #febc2e; }
+  .pv__chrome > span:nth-child(3) { background: #28c840; }
+  .pv__url {
+    margin-left: 0.6rem;
+    font-size: 0.75rem;
+    color: var(--cc-faint);
+    font-family: var(--cc-font-mono);
+  }
+  .pv__body {
+    padding: 1.1rem;
+  }
+  .pv__tabs {
+    display: inline-flex;
+    gap: 0.25rem;
+    background: var(--cc-surface-soft);
+    padding: 0.25rem;
+    border-radius: var(--cc-radius-pill);
+    margin-bottom: 1rem;
+  }
+  .pv__tab {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--cc-muted);
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--cc-radius-pill);
+  }
+  .pv__tab.is-active {
+    background: var(--cc-surface);
+    color: var(--cc-primary-dark);
+    box-shadow: var(--cc-shadow-soft);
+  }
+  .pv__cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.6rem;
+  }
+  .pv__card {
+    border: 1px solid var(--cc-border);
+    border-radius: var(--cc-radius-md);
+    overflow: hidden;
+    background: var(--cc-surface);
+  }
+  .pv__chip {
+    height: 56px;
+  }
+  .pv__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.5rem 0.55rem;
+  }
+  .pv__meta strong {
+    font-size: 0.78rem;
+  }
+  .pv__meta span {
+    font-size: 0.66rem;
+    color: var(--cc-faint);
+  }
+  .pv__contrast {
+    margin-top: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem 0.8rem;
+    border: 1px solid var(--cc-border);
+    border-radius: var(--cc-radius-md);
+    background: var(--cc-surface-soft);
+  }
+  .pv__contrast-demo {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--cc-border);
+    font-weight: 800;
+  }
+  .pv__contrast-info {
+    flex: 1;
+  }
+  .pv__contrast-label {
+    font-size: 0.72rem;
+    color: var(--cc-muted);
+  }
+  .pv__contrast-info strong {
+    font-size: 1.05rem;
+  }
+  .pv__pill {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.3rem 0.6rem;
+    border-radius: var(--cc-radius-pill);
+  }
+  .pv__pill.is-pass {
+    background: rgba(34, 197, 94, 0.16);
+    color: #15803d;
+  }
+  .pv__pill.is-fail {
+    background: rgba(220, 38, 38, 0.14);
+    color: #b91c1c;
+  }
+  .pv__strip {
+    margin-top: 0.9rem;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    height: 26px;
+    border-radius: var(--cc-radius-sm);
+    overflow: hidden;
+    border: 1px solid var(--cc-border);
+  }
+  .pv__strip span {
+    display: block;
+  }
+</style>

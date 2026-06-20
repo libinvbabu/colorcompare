@@ -1,0 +1,79 @@
+---
+import BaseLayout from "../components/layout/BaseLayout.astro";
+import Container from "../components/common/Container.astro";
+import Breadcrumbs from "../components/common/Breadcrumbs.astro";
+import Button from "../components/common/Button.astro";
+import { breadcrumbSchema } from "../utils/schema";
+
+const title = "Contact ColorCompare";
+const description =
+  "Get in touch with the ColorCompare team — feedback, tool requests, bug reports, and questions are all welcome.";
+// TODO: update to your real contact address before launch.
+const email = "hello@colorcompare.in";
+const schemas = [
+  breadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Contact", path: "/contact/" },
+  ]),
+];
+---
+
+<BaseLayout title={title} description={description} canonical="/contact/" schemas={schemas}>
+  <Breadcrumbs crumbs={[{ name: "Home", path: "/" }, { name: "Contact", path: "/contact/" }]} />
+  <Container width="narrow">
+    <div class="contact">
+      <div class="cc-prose">
+        <h1>Get in touch</h1>
+        <p>
+          We’d genuinely love to hear from you. Whether you’ve found a bug, want
+          to request a new tool, or just have feedback on how we can make
+          ColorCompare better — drop us a line.
+        </p>
+      </div>
+
+      <div class="contact__card">
+        <span class="contact__icon" aria-hidden="true">✉️</span>
+        <p class="contact__label">Email us at</p>
+        <a class="contact__email cc-mono" href={`mailto:${email}`}>{email}</a>
+        <div class="contact__btn">
+          <Button href={`mailto:${email}`}>Send an email</Button>
+        </div>
+      </div>
+
+      <div class="cc-prose">
+        <h2>Common reasons to reach out</h2>
+        <ul>
+          <li><strong>Tool requests</strong> — a color tool you wish existed.</li>
+          <li><strong>Bug reports</strong> — something not working as expected.</li>
+          <li><strong>Feedback</strong> — ideas to improve existing tools or content.</li>
+          <li><strong>Corrections</strong> — spotted an inaccuracy in a guide?</li>
+        </ul>
+        <p>We read every message and try to respond within a few business days.</p>
+      </div>
+    </div>
+  </Container>
+</BaseLayout>
+
+<style>
+  .contact { margin: 1.5rem 0 1rem; display: grid; gap: 2rem; }
+  .contact :global(h1) { font-size: clamp(2rem, 5.5vw, 3rem); }
+  .contact__card {
+    text-align: center;
+    background: var(--cc-surface);
+    border: 1px solid var(--cc-border);
+    border-radius: var(--cc-radius-lg);
+    box-shadow: var(--cc-shadow-soft);
+    padding: 2.25rem 1.5rem;
+  }
+  .contact__icon { font-size: 2.25rem; }
+  .contact__label { margin-top: 0.75rem; color: var(--cc-muted); font-size: 0.95rem; }
+  .contact__email {
+    display: inline-block;
+    margin-top: 0.35rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--cc-primary-dark);
+  }
+  .contact__email:hover { text-decoration: underline; }
+  .contact__btn { margin-top: 1.25rem; }
+</style>
